@@ -33,8 +33,3 @@ cc.save()
 
 cc2 = models.CompletedCourses(user_id = u1.id, course_code = c2.code, marks=22, completed=True)
 cc2.save()
-
-#db.session.add(models.User(name="An Admin", email="admin@xyz.com", password=hash_password("abcd"), role=[admin]))
-#db.session.add(models.User(name="A CTM", email="ctm@xyz.com", password=hash_password("abcd"), role=[ctm]))
-#db.session.add(models.User(name="A Management", email="im@xyz.com", password=hash_password("abcd"), role=[im]))
-#db.session.commit()
