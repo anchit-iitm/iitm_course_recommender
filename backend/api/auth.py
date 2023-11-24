@@ -82,9 +82,3 @@ def register():
         db.session.rollback()
         app.logger.exception("API_REGISTER: Error occurred")
         return show_500()
-    
-
-@app.route('/api/v1/test', methods=['GET'])
-@role_required('student')
-def abcd():
-    return jsonify(name="HI")

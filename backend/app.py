@@ -61,9 +61,12 @@ def create_app():
     return app, api, jwt
 
 
-app, api, jwt = create_app()
+app, api_handler, jwt = create_app()
 
 import api.auth
+from api.Profile import Student
+
+api_handler.add_resource(Student, "/api/v1/profile")
 
 @app.route('/')
 def home():

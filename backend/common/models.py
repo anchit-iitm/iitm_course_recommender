@@ -7,20 +7,33 @@ roles_users = db.Table('user_roles',
         db.Column('role_id', db.Integer(), db.ForeignKey('role.id'))
     )
 
-Users_Courses = db.Table('user_courses',
-        db.Column('id', db.Integer, primary_key=True, autoincrement=True, nullable=False),
-        db.Column('user', db.Integer, db.ForeignKey('user.id'), nullable=False),
-        db.Column('course', db.String(10), db.ForeignKey('courses.code'), nullable=False),
-        db.Column('marks', db.Float, nullable=False),
-        db.Column('completed', db.Boolean, default=False),    
-    )
-
-
 Courses_Instructors = db.Table('courses_intructors',
         db.Column('user', db.Integer, db.ForeignKey('user.id'), nullable=False),
         db.Column('course', db.String(10), db.ForeignKey('courses.code')),
     )
 
+class CompletedCourses(db.Model):
+    __tablename__ = 'user_courses'    
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, primary_key=True)
+    course_code = db.Column(db.String(10), db.ForeignKey('courses.code'), nullable=False, primary_key=True)
+    marks = db.Column(db.Float, nullable=True)
+    completed = db.Column(db.Boolean, default=False)
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+    
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+    
+    @classmethod
+    def has(cls, user_id, course_code):
+        return cls.query.filter_by(user_id=user_id, course_code=course_code).first() is not None
+
+    @classmethod
+    def get(cls, user_id, course_code):
+        return cls.query.filter_by(user_id=user_id, course_code=course_code).first()
 
 # class Course_Coreqs(db.Model):
 #         course_code = db.Column(db.String(10), db.ForeignKey('courses.code'), nullable=False)
@@ -46,7 +59,7 @@ class User(db.Model):
 
     role = db.relationship('Role', secondary=roles_users, backref=db.backref('user'))
     created_at = db.Column(db.String(), default=func.now())
-    completed_courses = db.relationship('Courses', secondary=Users_Courses, backref=db.backref('user'))
+    completed_courses = db.relationship('CompletedCourses', primaryjoin = id==CompletedCourses.user_id)
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
@@ -58,6 +71,10 @@ class User(db.Model):
     def get_user_by_email(cls, email):
         return cls.query.filter_by(email=email).first()
     
+    @classmethod
+    def get_user_by_jwt(cls, jwt_identity):
+        return cls.query.filter_by(id=jwt_identity).first()
+
     def save(self):
         db.session.add(self)
         db.session.commit()
@@ -90,6 +107,12 @@ class Role(db.Model):
 
 class Courses(db.Model):
     __tablename__ = 'courses'
+    FOUNDATION = 'foundation'
+    DP = 'dp'
+    DS = 'ds'
+    BSC = 'bsc'
+    BS = 'bs'
+
     code = db.Column(db.String(10), primary_key=True)
     name = db.Column(db.String(50), nullable=False)
     description = db.Column(db.String(500))
@@ -100,6 +123,22 @@ class Courses(db.Model):
     #co_requisites = db.relationship('Courses', secondary = Course_Coreqs, foreign_keys='[Course_Coreqs.course_code]')
     #pre_requisites = db.relationship('Courses', secondary = Course_Prereqs, foreign_keys='[courses_prereqs.course_code]')
 
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+    
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+    
+    @classmethod
+    def has(cls, code):
+        return cls.query.filter_by(code=code).first() is not None
+    
+    @classmethod
+    def get_course_by_code(cls, code):
+        return cls.query.filter_by(code=code).first()
+
 
 class Recommendations(db.Model):
     __tablename__ = 'recommend'
@@ -108,6 +147,14 @@ class Recommendations(db.Model):
     course = db.Column(db.String(10), db.ForeignKey('courses.code'), nullable=False)
     level = db.Column(db.Integer, nullable=False)
     status = db.Column(db.Integer, nullable=False)
+    
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+    
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
 
 class Feedback(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -118,3 +165,11 @@ class Feedback(db.Model):
     time = db.Column(db.String(), default=func.now())
     likes = db.Column(db.Integer, default=0)
     dislikes = db.Column(db.Integer, default=0)
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+    
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()

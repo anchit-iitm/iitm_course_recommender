@@ -17,9 +17,22 @@ db.session.add(im)
 db.session.add(stu)
 db.session.commit()
 
+
+c1 = models.Courses(code="BCS1001", name="MyTest Subject 1",description="Adding a subject into db for testing", difficulty_rating=8.2,level=models.Courses.FOUNDATION)
+c1.save()
+
+c2 = models.Courses(code="BCS1002", name="MyTest Subject 2",description="Adding a subject into db for testing2", difficulty_rating=7.1,level=models.Courses.BSC)
+c1.save()
+
 u1 = models.User(name="A Student", email="abc@xyz.com", role=[stu])
 u1.set_password("abcd")
 u1.save()
+
+cc = models.CompletedCourses(user_id = u1.id, course_code = c1.code, completed=False)
+cc.save()
+
+cc2 = models.CompletedCourses(user_id = u1.id, course_code = c2.code, marks=22, completed=True)
+cc2.save()
 
 #db.session.add(models.User(name="An Admin", email="admin@xyz.com", password=hash_password("abcd"), role=[admin]))
 #db.session.add(models.User(name="A CTM", email="ctm@xyz.com", password=hash_password("abcd"), role=[ctm]))
