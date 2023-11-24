@@ -64,7 +64,7 @@ def create_app():
 app, api_handler, jwt = create_app()
 
 import api.auth
-from api.Profile import Student
+from api.profile import Student
 
 api_handler.add_resource(Student, "/api/v1/profile")
 
