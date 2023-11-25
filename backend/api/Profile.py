@@ -75,7 +75,7 @@ class Student(Resource):
             },
             "current_degree_level": {
                 "type": "string",
-                "enum": ["foundation", "dp", "ds", "bsc", "bs"]
+                "enum": ["foundation", "diploma", "degree"]
             },
             "dp_or_ds": {
                 "type": "string",

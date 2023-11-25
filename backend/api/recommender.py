@@ -11,6 +11,8 @@ from common.response_codes import *
 from common.helpers import role_required
 
 import numpy as np
+from itertools import combinations
+import random
 
 class Recommender(Resource):
 
@@ -25,32 +27,118 @@ class Recommender(Resource):
         self.max_subjects = 0
         self.matrix = []
         self.capability_score = 0
+        self.prereqs = dict()
+        self.coreqs = dict()
 
-    def recommend_course(self):
-        if len(self.pending_courses) == 0:
-            return self.matrix
+    def filter_prereqs(self):
+        possible_next_courses = []
+        for pendingCourse in self.pending_courses:
+            keep = True
+            if pendingCourse.code in self.prereqs:
+                for prereqs in self.prereqs[pendingCourse.code]:
+                    if prereqs not in self.completed_courses:
+                        keep = False
+            
+            if self.level != pendingCourse.level:
+                keep = False
+
+            if keep:                
+                if (self.dp_or_ds == 'both') or (pendingCourse.dp_or_ds == self.dp_or_ds):
+                    possible_next_courses.append(pendingCourse)
+        
+        return possible_next_courses
     
+    def filter_level_dp_or_ds(self, possible_next_courses):        
+        if len(possible_next_courses) == 0:
+            old_dp_or_ds = self.dp_or_ds
+            self.dp_or_ds = 'both'
+            possible_next_courses = self.filter_prereqs()
+        
+        if len(possible_next_courses) == 0:
+            self.dp_or_ds = old_dp_or_ds
+            self.level = 'diploma' if self.level == 'foundation' else 'degree'
+            possible_next_courses = self.filter_prereqs()
+            if len(possible_next_courses) == 0:            
+                self.dp_or_ds = 'both'
+                possible_next_courses = self.filter_prereqs()
+        
+        return possible_next_courses
+
+    def make_combinations(self, possible_next_courses):
+        final_combinations = []
+        possible_combinations = combinations(possible_next_courses, self.max_subjects)
+        
+        for aCombination in possible_combinations:
+            accepted = True
+            for aCourse in aCombination:
+                if len(self.coreqs[aCourse.code]) > 0:                    
+                    for aCoreq in self.coreqs[aCourse.code]:
+                        if aCoreq not in aCombination:
+                            accepted = False
+            
+            if accepted:
+                final_combinations.append(aCombination)
+        
+        return final_combinations
+
+    def recommend_course(self):        
+        possible_next_courses = self.filter_level_dp_or_ds(self.filter_prereqs())
+        #app.logger.info(possible_next_courses)
+        if len(possible_next_courses) <= self.max_subjects:
+            return possible_next_courses
+        
+        combs = self.make_combinations(possible_next_courses)
+        if len(combs) == 1:
+            return combs[0]
+        
+        # more than 1 combinations exist. Check difficulty score vs capability score next.        
+        return random.choice(combs) if len(combs) > 0 else []
 
     def populate_fields(self, user):
         total = 0
-        for seenCourse in user.completed_courses:
-            if seenCourse.completed:
-                rating = Courses.get_course_by_code(seenCourse.course_code).difficulty_rating                
-                total += (rating/10) * (seenCourse.marks/100)
-
-                self.completed_courses.append(seenCourse.course_code)
-            
-            else:
-                self.current_courses.append(seenCourse.course_code)
+        allCourses = Courses.get_all_courses()
+        for aCourse_object in allCourses:
+            self.prereqs[aCourse_object.code] = aCourse_object.pre_reqs
+            self.coreqs[aCourse_object.code] = aCourse_object.co_reqs
+            self.pending_courses.append(aCourse_object)
         
-        self.capability_score = total / len(self.completed_courses)
+        for seenCourse in user.completed_courses:
+            courses_object = Courses.get_course_by_code(seenCourse.course_code)
+            self.pending_courses.remove(courses_object)
+            if seenCourse.completed:
+                rating = courses_object.difficulty_rating                
+                total += (rating/10) * (seenCourse.marks/100)
+                self.completed_courses.append(courses_object)            
+            else:
+                self.current_courses.append(courses_object)
+                self.completed_courses.append(courses_object)
 
+        self.capability_score = total / len(self.completed_courses) if len(self.completed_courses) > 0 else 1
         self.level = user.curr_deg_level
         self.dp_or_ds = user.ds_or_dp
-        self.max_subjects = user.max_subjects
+        self.max_subjects = user.max_subjects        
     
     @jwt_required()
     def get(self):
-        self.populate_fields(User.get_user_by_jwt(get_jwt_identity()))
+        user = User.get_user_by_jwt(get_jwt_identity())
+        
+        self.populate_fields(user)
+        r = self.recommend_course()
 
+        return_object = {
+            "no_courses": self.max_subjects,
+            "upcoming_term": [i.name for i in r],
+            "matrix_order": []
+        }
+        while(len(r) > 0):
+            return_object["matrix_order"].append([i.name for i in r])
+            for i in r:
+                self.completed_courses.append(i)
+                self.pending_courses.remove(i)
+
+            r = self.recommend_course()
+        
+        return make_response(jsonify(return_object), 200)
+
+                
     
