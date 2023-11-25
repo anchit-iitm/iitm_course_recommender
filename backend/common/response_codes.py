@@ -9,7 +9,7 @@ def show_201(message="created"):
     return make_response(jsonify({"message": message, "status": "success"}), 201)
 
 def show_202(message="accepted"):
-    return make_response(jsonify({"message": message, "status": "success"}), 201)
+    return make_response(jsonify({"message": message, "status": "success"}), 202)
 
 def show_400(message = "Bad Request sent"):
     return make_response(jsonify({"message": message, "status": "error"}), 400)

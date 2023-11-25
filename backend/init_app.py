@@ -22,7 +22,7 @@ c1 = models.Courses(code="BCS1001", name="MyTest Subject 1",description="Adding 
 c1.save()
 
 c2 = models.Courses(code="BCS1002", name="MyTest Subject 2",description="Adding a subject into db for testing2", difficulty_rating=7.1,level=models.Courses.BSC)
-c1.save()
+c2.save()
 
 u1 = models.User(name="A Student", email="abc@xyz.com", role=[stu])
 u1.set_password("abcd")
