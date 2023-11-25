@@ -79,7 +79,7 @@ class Student(Resource):
             },
             "dp_or_ds": {
                 "type": "string",
-                "enum": ["dp", "ds"]
+                "enum": ["dp", "ds", "both"]
             },
             "current_courses": {
                 "type": "array",
