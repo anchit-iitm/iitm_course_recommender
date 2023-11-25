@@ -30,7 +30,7 @@ class Recommender(Resource):
         self.prereqs = dict()
         self.coreqs = dict()
 
-    def filter_prereqs(self):
+    def __filter_prereqs(self):
         possible_next_courses = []
         for pendingCourse in self.pending_courses:
             keep = True
@@ -48,23 +48,23 @@ class Recommender(Resource):
         
         return possible_next_courses
     
-    def filter_level_dp_or_ds(self, possible_next_courses):        
+    def __filter_level_dp_or_ds(self, possible_next_courses):        
         if len(possible_next_courses) == 0:
             old_dp_or_ds = self.dp_or_ds
             self.dp_or_ds = 'both'
-            possible_next_courses = self.filter_prereqs()
+            possible_next_courses = self.__filter_prereqs()
         
         if len(possible_next_courses) == 0:
             self.dp_or_ds = old_dp_or_ds
             self.level = 'diploma' if self.level == 'foundation' else 'degree'
-            possible_next_courses = self.filter_prereqs()
+            possible_next_courses = self.__filter_prereqs()
             if len(possible_next_courses) == 0:            
                 self.dp_or_ds = 'both'
-                possible_next_courses = self.filter_prereqs()
+                possible_next_courses = self.__filter_prereqs()
         
         return possible_next_courses
 
-    def make_combinations(self, possible_next_courses):
+    def __make_combinations(self, possible_next_courses):
         final_combinations = []
         possible_combinations = combinations(possible_next_courses, self.max_subjects)
         
@@ -81,20 +81,20 @@ class Recommender(Resource):
         
         return final_combinations
 
-    def recommend_course(self):        
-        possible_next_courses = self.filter_level_dp_or_ds(self.filter_prereqs())
+    def __recommend_course(self):        
+        possible_next_courses = self.__filter_level_dp_or_ds(self.__filter_prereqs())
         #app.logger.info(possible_next_courses)
         if len(possible_next_courses) <= self.max_subjects:
             return possible_next_courses
         
-        combs = self.make_combinations(possible_next_courses)
+        combs = self.__make_combinations(possible_next_courses)
         if len(combs) == 1:
             return combs[0]
         
         # more than 1 combinations exist. Check difficulty score vs capability score next.        
         return random.choice(combs) if len(combs) > 0 else []
 
-    def populate_fields(self, user):
+    def __populate_fields(self, user):
         total = 0
         allCourses = Courses.get_all_courses()
         for aCourse_object in allCourses:
@@ -122,8 +122,8 @@ class Recommender(Resource):
     def get(self):
         user = User.get_user_by_jwt(get_jwt_identity())
         
-        self.populate_fields(user)
-        r = self.recommend_course()
+        self.__populate_fields(user)
+        r = self.__recommend_course()
 
         return_object = {
             "no_courses": self.max_subjects,
@@ -136,7 +136,7 @@ class Recommender(Resource):
                 self.completed_courses.append(i)
                 self.pending_courses.remove(i)
 
-            r = self.recommend_course()
+            r = self.__recommend_course()
         
         return make_response(jsonify(return_object), 200)
 
