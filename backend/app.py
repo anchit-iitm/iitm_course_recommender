@@ -65,8 +65,10 @@ app, api_handler, jwt = create_app()
 
 import api.auth
 from api.profile import Student
+from api.admin import SuperAdmin
 
 api_handler.add_resource(Student, "/api/v1/profile")
+api_handler.add_resource(SuperAdmin, "/api/v1/admin")
 
 @app.route('/')
 def home():

@@ -10,7 +10,7 @@ from flask_expects_json import expects_json
 from common.response_codes import *
 from common.helpers import role_required
 
-class Student(Resource):    
+class Student(Resource):
 
     # does not allow any method in the class to be accessed without login
     @jwt_required()

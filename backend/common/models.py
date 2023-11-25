@@ -67,14 +67,6 @@ class User(db.Model):
     def check_password(self, password):
         return check_password_hash(self.password, password)
 
-    @classmethod
-    def get_user_by_email(cls, email):
-        return cls.query.filter_by(email=email).first()
-    
-    @classmethod
-    def get_user_by_jwt(cls, jwt_identity):
-        return cls.query.filter_by(id=jwt_identity).first()
-
     def save(self):
         db.session.add(self)
         db.session.commit()
@@ -82,9 +74,25 @@ class User(db.Model):
     def delete(self):
         db.session.delete(self)
         db.session.commit()
+    
+    @classmethod
+    def get_user_by_email(cls, email):
+        return cls.query.filter_by(email=email).first()
+    
+    @classmethod
+    def has(cls, email):
+        return cls.query.filter_by(email=email).first() is not None
+
+    @classmethod
+    def get_user_by_jwt(cls, jwt_identity):
+        return cls.query.filter_by(id=jwt_identity).first()
+    
+    @classmethod
+    def get_all_users_with_role(cls, roles = ['admin', 'ctm', 'im']):
+        return cls.query.filter(cls.role.any(Role.role.in_(roles))).all()
 
     def __repr__(self):
-        return f'{self.id}, {self.email} |'
+        return f'{self.email}'
 
 class Role(db.Model):
     __tablename__ = 'role'
@@ -99,9 +107,13 @@ class Role(db.Model):
     @classmethod
     def admin_role(cls):
         return cls.query.filter_by(role='admin').first()
+    
+    @classmethod
+    def get_role(cls, role):
+        return cls.query.filter_by(role=role).first()
 
     def __repr__(self):
-        return f'{self.id}, {self.role} |'
+        return f'{self.role}'
 
 
 

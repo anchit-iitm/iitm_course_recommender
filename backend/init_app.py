@@ -28,6 +28,19 @@ u1 = models.User(name="A Student", email="abc@xyz.com", role=[stu])
 u1.set_password("abcd")
 u1.save()
 
+u2 = models.User(name="An Admin", email="admin@xyz.com", role=[admin])
+u2.set_password("abcd")
+u2.save()
+
+u3 = models.User(name="A CTM", email="ctm@xyz.com", role=[ctm])
+u3.set_password("abcd")
+u3.save()
+
+u4 = models.User(name="An IM", email="im@xyz.com", role=[im])
+u4.set_password("abcd")
+u4.save()
+
+
 cc = models.CompletedCourses(user_id = u1.id, course_code = c1.code, completed=False)
 cc.save()
 
