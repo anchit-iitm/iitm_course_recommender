@@ -192,3 +192,15 @@ class Feedback(db.Model):
     def delete(self):
         db.session.delete(self)
         db.session.commit()
+    
+    @classmethod
+    def get_all_feedback(cls):
+        return cls.query.all()
+
+    @classmethod
+    def get_feedback_by_id(cls, id):
+        return cls.query.filter_by(id=id).first()
+    
+    @classmethod
+    def get_feedback_by_course(cls, course):
+        return cls.query.filter_by(course=course).all()
