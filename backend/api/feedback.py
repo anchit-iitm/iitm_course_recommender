@@ -1,4 +1,4 @@
-from flask_restful import Resource
+from flask_restful import Resource, abort
 from flask_login import current_user
 from flask import jsonify, request
 from common.models import Feedback
@@ -14,7 +14,7 @@ class CourseFeedbackResource(Resource):
             feedbacks = Feedback.get_all_feedback()
 
             if not feedbacks:
-                return show_404('No feedbacks found for the course')
+                abort(404, 'No Feedback found')
 
             feedbacks_data = [
                 {
@@ -82,7 +82,7 @@ class FeedbackResource(Resource):
             feedback = Feedback.get_feedback_by_id(feedback_id)
 
             if not feedback:
-                return show_404('Feedback not found')
+                abort(404, 'Feedback not found')
 
             # Check if the user has upvoted before deleting
             if current_user.id in [upvote.user.id for upvote in feedback.upvotes]:
@@ -96,7 +96,3 @@ class FeedbackResource(Resource):
             # Rollback changes in case of an exception
             db.session.rollback()
             return show_500(str(e))
-
-
-# Define API routes for CourseFeedbackResource and FeedbackResource
-
