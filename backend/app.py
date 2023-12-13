@@ -68,7 +68,9 @@ from api.profile import Student
 from api.admin import SuperAdmin
 from api.recommender import Recommender
 from api.feedback import CourseFeedbackResource, FeedbackResource
+from api.student import AllStudents
 
+api_handler.add_resource(AllStudents, "/api/v1/student/all")
 api_handler.add_resource(Student, "/api/v1/profile")
 api_handler.add_resource(SuperAdmin, "/api/v1/admin")
 api_handler.add_resource(Recommender, "/api/v1/recommender")

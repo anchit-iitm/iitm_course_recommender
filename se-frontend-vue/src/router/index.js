@@ -18,7 +18,14 @@ const routes = [
   },
   {
     path: '/admin',
-    redirect: '/admin/dashboard',    
+    redirect: '/admin/dashboard',
+    beforeEnter: (to, from, next) => {
+      let role = (sessionStorage.getItem("role") === 'admin')
+      if (!role)
+        next({ name: 'Login' })
+      else
+        next()
+    },    
     component: () => import('@/layouts/admin/Layout.vue'),
     children: [
         {
@@ -28,8 +35,8 @@ const routes = [
         },
 
         {
-          name: 'CTMView',
-          path: '/admin/ctm',
+          name: 'AdminsList',
+          path: '/admin/all',
           component: () => import('@/views/CourseTeamView.vue'),
       },
 
@@ -40,6 +47,16 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
+})
+
+router.beforeEach((to, from, next) => {
+  const isAuthenticated = (sessionStorage.getItem("token") === null) ? false : true;
+  if (!isAuthenticated) {
+    if (to.name !== 'Login' && to.name !== 'Register'){ 
+      next({ name: 'Login' })
+    } else next()
+  }
+  else next()
 })
 
 export default router

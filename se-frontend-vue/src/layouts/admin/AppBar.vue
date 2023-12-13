@@ -13,9 +13,7 @@
         <v-list nav>
           <v-list-item prepend-icon="mdi-home" title="Dashboard" value="dashboard" :to="{name: 'AdminDashboard'}"></v-list-item>
           <v-list-item prepend-icon="mdi-book-open-blank-variant" title="Courses" value="courses"></v-list-item>
-          <v-list-item prepend-icon="mdi-human" title="Course Team" value="team" :to="{name: 'CTMView'}"></v-list-item>
-          <v-list-item prepend-icon="mdi-currency-usd" title="Management Team" value="management" :to="{name: 'CTMView'}"></v-list-item>
-          <v-list-item prepend-icon="mdi-account-outline" title="Administrators" value="admins" :to="{name: 'CTMView'}"></v-list-item>
+          <v-list-item prepend-icon="mdi-account-outline" title="All Administrators" value="admins" :to="{name: 'AdminsList'}"></v-list-item>
         </v-list>
       </v-navigation-drawer>
 
