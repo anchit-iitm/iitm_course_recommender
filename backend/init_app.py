@@ -20,6 +20,27 @@ db.session.commit()
 
 add_bulk_from_csv("./db_raw/courses.csv")
 
+users = [
+    ("Anhat Singh", "anhatsingh@gmail.com", admin),
+    ("Jasleen Kaur", "jasleenkaur@gmail.com", ctm),
+    ("Oza Jay", "ozajay@gmail.com", im),
+    ("Anchit Mandal", "anchitmandal@gmail.com", stu),
+    ("Rohit Londhe", "rohitlondhe@gmail.com", stu),
+    
+    ("Akhil Aggarwal", "akhil@gmail.com", admin),
+    ("Anu Sharma", "anu@gmail.com", ctm),
+    ("Abhinoor Singh", "abhinoor@gmail.com", im),
+    ("Harnoor Kaur", "harnoor@gmail.com", stu),
+    ("Guramanat Singh", "guramanat@gmail.com", admin),
+    ("PPD", "ppd@gmail.com", ctm),
+    ("A stupid person", "stoopid@gmail.com", im),
+]
+
+for i in users:
+    x = models.User(name = i[0], email=i[1], role=[i[2]])
+    x.set_password("abcd")
+    x.save()
+
 u1 = models.User(name="A Student", email="abc@xyz.com", role=[stu], pic="abcd.png", max_subjects=2, curr_deg_level="foundation", ds_or_dp="dp")
 u1.set_password("abcd")
 u1.save()
