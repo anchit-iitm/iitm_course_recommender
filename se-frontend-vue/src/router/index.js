@@ -37,7 +37,7 @@ const routes = [
         {
           name: 'AdminsList',
           path: '/admin/all',
-          component: () => import('@/views/CourseTeamView.vue'),
+          component: () => import('@/views/AdminAllView.vue'),
       },
 
     ]
