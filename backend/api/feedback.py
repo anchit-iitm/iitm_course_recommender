@@ -5,7 +5,6 @@ from common.models import Feedback
 from common.database import db
 from common.helpers import role_required
 from common.response_codes import show_200, show_201, show_400, show_401, show_403, show_404, show_500
-from app import api
 
 class CourseFeedbackResource(Resource):
     # GET method for retrieving feedback for a specific course

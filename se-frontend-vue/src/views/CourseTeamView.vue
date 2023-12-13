@@ -1,17 +1,27 @@
 <template>
     <v-container>
-        <v-card>
+        <v-card elevation="2">
             <v-card-title>Course Team</v-card-title>
-            <v-data-table :items="ctm">
+            <template v-slot:text>
+                <v-text-field
+                    v-model="search"
+                    label="Search"
+                    prepend-inner-icon="mdi-magnify"
+                    single-line
+                    variant="outlined"
+                    hide-details
+                ></v-text-field>
+            </template>
+            <v-data-table :items="ctm" density="compact" :search="search">
                 <template v-slot:item="row">
                     <tr>
                         <td width="40%">{{row.item.id}}</td>
                         <td width="40%">{{row.item.name}}</td>                        
                         <td>
-                            <v-btn class="mx-2" fab dark small color="blue" @click="onButtonClick(row.item)">
+                            <v-btn class="mx-2" height="80%" fab dark small color="blue" @click="onButtonClick(row.item)">
                                 <v-icon dark>mdi-pencil</v-icon>
                             </v-btn>
-                            <v-btn class="mx-2" fab dark small color="red" @click="onButtonClick(row.item)">
+                            <v-btn class="mx-2" height="80%" fab dark small color="red" @click="onButtonClick(row.item)">
                                 <v-icon dark>mdi-trash-can</v-icon>
                             </v-btn>
                         </td>
@@ -85,6 +95,7 @@
     export default {
         data: function() {
             return {
+                search: '',
                 ctm: [],
                 im: [],
                 adm: []
