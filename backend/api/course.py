@@ -1,17 +1,21 @@
-from flask_restful import Resource, reqparse
+from flask import current_app as app
 from flask import jsonify, request
-from common.models import Courses, User
-from common.database import db
+from common.models import *
+
+from flask_restful import Resource
+from flask_jwt_extended import get_jwt_identity
+from flask_jwt_extended import jwt_required
+from flask_expects_json import expects_json
+
+from common.response_codes import *
 from common.helpers import role_required
-from common.response_codes import show_200, show_201, show_400, show_401, show_403, show_404, show_500
-from app import api
 
 class CourseResource(Resource):
     # GET method for retrieving a single course by ID
     def get(self, id):
         try:
             # Query the database for the course with the specified ID
-            course = Courses.query.get(id)
+            course = Courses.get_course_by_code(id)
 
             if not course:
                 return show_404('Course not found')
@@ -23,19 +27,19 @@ class CourseResource(Resource):
                 'description': course.description,
                 'difficulty_rating': course.difficulty_rating,
                 'level': course.level,
-                'pre_req': [prerequisite.code for prerequisite in course.pre_requisites],
-                'co_req': [corequisite.code for corequisite in course.co_requisites],
-                'availability': [availability for availability in course.availability],
+                'pre_req': [prerequisite.code for prerequisite in course.pre_reqs],
+                'co_req': [corequisite.code for corequisite in course.co_reqs],
+                # 'availability': [availability for availability in course.availability],
                 'instructors': [
                     {'name': instructor.name, 'email': instructor.email}
                     for instructor in course.instructors
                 ]
             }
 
-            return show_200('Course found', {'course': course_data})
+            return make_response(jsonify(course_data), 200)
 
         except Exception as e:
-            return show_500(str(e))
+            return show_500()
 
     # PATCH method for modifying a single course by ID
     @role_required('admin')
@@ -54,6 +58,14 @@ class CourseResource(Resource):
             course.name = data.get('name', course.name)
             course.description = data.get('description', course.description)
             course.level = data.get('level', course.level)
+            course.dp_or_ds = data.get('dp_or_ds', course.dp_or_ds)
+            course.credits = data.get('credits', course.credits)
+            new_instructors = data.get('instructors', None)
+            if new_instructors:
+                course.instructors = []
+                for i in new_instructors:
+                    ins = User.get_user_by_email(i['email'])
+                    course.instructors.append(ins)
             # Update other properties as needed
 
             # Commit the changes to the database
@@ -64,14 +76,14 @@ class CourseResource(Resource):
         except Exception as e:
             # Rollback changes in case of an exception
             db.session.rollback()
-            return show_500(str(e))
+            return show_500()
 
     # DELETE method for deleting a single course by ID
     @role_required('admin')
     def delete(self, id):
         try:
             # Query the database for the course with the specified ID
-            course = Courses.query.get(id)
+            course = Courses.get_course_by_code(id)
 
             if not course:
                 return show_404('Course not found')
@@ -85,7 +97,7 @@ class CourseResource(Resource):
         except Exception as e:
             # Rollback changes in case of an exception
             db.session.rollback()
-            return show_500(str(e))
+            return show_500()
 
 # Resource for handling multiple courses
 class CoursesResource(Resource):
@@ -93,7 +105,8 @@ class CoursesResource(Resource):
     def get(self):
         try:
             # Query the database for all courses
-            courses = Courses.query.all()
+            courses = Courses.get_all_courses()
+            app.logger.info(courses)
 
             if not courses:
                 return show_404('No courses found')
@@ -106,9 +119,9 @@ class CoursesResource(Resource):
                     'description': course.description,
                     'difficulty_rating': course.difficulty_rating,
                     'level': course.level,
-                    'pre_req': [prerequisite.code for prerequisite in course.pre_requisites],
-                    'co_req': [corequisite.code for corequisite in course.co_requisites],
-                    'availability': [availability for availability in course.availability],
+                    'pre_req': [prerequisite.code for prerequisite in course.pre_reqs],
+                    'co_req': [corequisite.code for corequisite in course.co_reqs],
+                    # 'availability': [availability for availability in course.availability],
                     'instructors': [
                         {'name': instructor.name, 'email': instructor.email}
                         for instructor in course.instructors
@@ -117,10 +130,11 @@ class CoursesResource(Resource):
                 for course in courses
             ]
 
-            return show_200('Courses found', {'courses': courses_data})
+            return make_response(jsonify(courses_data), 200)
 
         except Exception as e:
-            return show_500(str(e))
+            app.logger.exception(e)
+            return show_500()
 
     # POST method for adding a new course
     @role_required('admin')
@@ -148,8 +162,5 @@ class CoursesResource(Resource):
         except Exception as e:
             # Rollback changes in case of an exception
             db.session.rollback()
-            return show_500(str(e))
-
-# Define API routes for CourseResource and CoursesResource
-api.add_resource(CourseResource, '/courses/<int:id>')
-api.add_resource(CoursesResource, '/courses')
+            app.logger.exception(e)
+            return show_500()

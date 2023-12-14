@@ -58,6 +58,10 @@ u4.set_password("abcd")
 u4.save()
 
 
+c = models.Courses.get_all_courses()[0]
+c.instructors = [u3]
+c.save()
+
 # cc = models.CompletedCourses(user_id = u1.id, course_code ="BSMA1001", completed=False)
 # cc.save()
 

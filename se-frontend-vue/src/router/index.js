@@ -38,7 +38,13 @@ const routes = [
           name: 'AdminsList',
           path: '/admin/all',
           component: () => import('@/views/AdminAllView.vue'),
-      },
+        },
+
+        {
+          name: 'AdminsCourseList',
+          path: '/admin/courses/all',
+          component: () => import('@/views/AdminCourses.vue'),
+        },
 
     ]
 },

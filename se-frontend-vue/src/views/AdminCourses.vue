@@ -3,29 +3,15 @@
         <v-card elevation="2">            
   <v-data-table
     :headers="headers"
-    :items="admins"
+    :items="courses"
     :group-by="groupBy"
     items-per-page = 25
-  >
-  <template v-slot:group-header="{ item, columns, toggleGroup, isGroupOpen }">
-      <tr>
-        <td :colspan="columns.length">
-          <VBtn
-            size="small"
-            variant="text"
-            :icon="isGroupOpen(item) ? '$expand' : '$next'"
-            @click="toggleGroup(item)"
-          ></VBtn>          
-          {{ item.value == "admin" ? 'Administrators' : (item.value=='ctm'? 'Course Team Members' : "IITM Management") }}
-        </td>
-      </tr>
-    </template>
-    
+  > 
     <template v-slot:top>
       <v-toolbar
         flat
       >
-        <v-toolbar-title>Admin Members</v-toolbar-title>
+        <v-toolbar-title>Courses</v-toolbar-title>
         <v-divider
           class="mx-4"
           inset
@@ -43,7 +29,7 @@
               class="mb-2"
               v-bind="props"
             >
-              Add Administrator
+              Add Course
             </v-btn>
           </template>
           <v-card>
@@ -53,30 +39,20 @@
 
             <v-card-text>
               <v-container>                
-                  <v-row
-                  >
-                  <v-text-field
-                    v-if = "editMode"
-                    v-model="editedItem.id"
-                    label="Email Address"    
-                    readonly    
+                  <v-row>
+                  <v-text-field                    
+                    v-model="editedItem.name"
+                    label="Course Name"                    
                     ></v-text-field>
-
-                    <v-autocomplete   
-                    v-else                 
-                    v-model="editedItem.id"
-                    label="Email Address"
-                    :items="all_emails"
-                    item-title="id"
-                    return-object                    
-                    ></v-autocomplete>
                   </v-row>                  
-                  <v-row
-                  >
-                  <v-autocomplete
-                    v-model="editedItem.role"
-                    label="Access Level"
-                    :items="['admin', 'ctm', 'im']"
+                  <v-row>
+                  <v-autocomplete                                  
+                    v-model="editedItem.instructors"
+                    label="Course Team Members"
+                    :items="all_emails"
+                    item-title="email"
+                    multiple
+                    return-object
                     ></v-autocomplete>
                   </v-row>                  
                 
@@ -115,6 +91,9 @@
         </v-dialog>
       </v-toolbar>
     </template>
+    <template v-slot:item.instructors="{item}">
+      <p class="mt-2" v-for="x in item.instructors">{{x.name}}</p>      
+    </template>
     <template v-slot:item.actions="{ item }">
       <v-icon
         size="small"
@@ -144,44 +123,44 @@
     
 </template>
 
-<script>
+<script>    
     export default {
       data: () => ({
         groupBy: [
           {
-            key: 'role',
-            order: 'asc',
+            key: 'level',            
           },
         ],
         all_emails: [],
         search: '',
-        admins: [],
+        courses: [],
         dialog: false,
         dialogDelete: false,
         headers: [
           {
-            title: 'Email',
+            title: 'Course Code',
             align: 'start',            
             key: 'id',
           },
           { title: 'Name', key: 'name' },
-          { title: 'Created At', key: 'created_at' },
+          { title: 'Difficulty Rating', key: 'difficulty_rating' },
+          { title: 'Instructors', key: 'instructors' },
           { title: 'Actions', key: 'actions', sortable: false },
         ],        
         editedIndex: -1,
         editedItem: {
-          id: '',
-          role: ''
+          name: '',
+          instructors: []
         },
         defaultItem: {            
-            id: '',
-            role: 'admin'
+            name: '',
+            instructors: []
         },
       }),
   
       computed: {
         formTitle () {
-          return this.editedIndex === -1 ? 'Add Member' : 'Edit Member'
+          return this.editedIndex === -1 ? 'Add Course' : 'Edit Course'
         },
 
         editMode () {
@@ -205,6 +184,32 @@
       methods: {
         initialize : async function() {
             let token = sessionStorage.getItem("token")
+            await fetch('/api/v1/courses/all', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                
+            })
+            .then(response => response.json().then(jdata=> ({response: response, data: jdata})))
+            .then(({response, data}) => {
+                if(!response.ok){
+                    throw new Error(`Error ${response.status}: ${data.msg}`)
+                }
+                this.courses = data
+
+                
+                // let courses_list = data.filter((item) => {                    
+                //     let instructors = item.instructors.filter((ins) => ins.email)
+                //     return instructors.includes(sessionStorage.getItem("token"))
+                //   })
+                
+            })
+            .catch(error => {                                
+                console.log(error)
+            })
+
             await fetch('/api/v1/admin', {
                 method: 'GET',
                 headers: {
@@ -217,41 +222,16 @@
             .then(({response, data}) => {
                 if(!response.ok){
                     throw new Error(`Error ${response.status}: ${data.msg}`)
-                }
+                }                
                 for (var item in data) {
-                    this.admins.push({
-                        id: data[item].email,
-                        name: data[item].name,
-                        role: data[item].role,
-                        created_at: data[item].created_at
-                    })                    
-                }
-            })
-            .catch(error => {                                
-                console.log(error)
-            })
-
-            await fetch('/api/v1/student/all', {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                
-            })
-            .then(response => response.json().then(jdata=> ({response: response, data: jdata})))
-            .then(({response, data}) => {
-                if(!response.ok){
-                    throw new Error(`Error ${response.status}: ${data.msg}`)
-                }
-                console.log(data)
-                for (var item in data) {
-                    this.all_emails.push({
-                        id: data[item].email,
-                        name: data[item].name,
-                        role: data[item].role,
-                        created_at: data[item].created_at
-                    })                    
+                    if (data[item].role == "ctm"){
+                        this.all_emails.push({
+                            email: data[item].email,
+                            name: data[item].name,
+                            role: data[item].role,
+                            created_at: data[item].created_at
+                        })                    
+                    }
                 }
             })
             .catch(error => {                
@@ -261,13 +241,13 @@
         },
   
         editItem (item) {
-          this.editedIndex = this.admins.indexOf(item)
+          this.editedIndex = this.courses.indexOf(item)
           this.editedItem = Object.assign({}, item)
           this.dialog = true
         },
   
         deleteItem (item) {
-          this.editedIndex = this.admins.indexOf(item)
+          this.editedIndex = this.courses.indexOf(item)
           this.editedItem = Object.assign({}, item)
           this.dialogDelete = true
         },
@@ -275,22 +255,19 @@
         deleteItemConfirm: async function () {
             this.closeDelete()
             let token = sessionStorage.getItem("token")
-            await fetch('/api/v1/admin', {
+            await fetch('/api/v1/courses/'+this.courses[this.editedIndex].id, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    "email": this.admins[this.editedIndex].id,                     
-                })                
+                }
             })
             .then(response => response.json().then(jdata=> ({response: response, data: jdata})))
             .then(({response, data}) => {
                 if(!response.ok){
                     throw new Error(`Error ${response.status}: ${data.msg}`)
                 }
-                this.admins.splice(this.editedIndex, 1)
+                this.courses.splice(this.editedIndex, 1)
             })
             .catch(error => {
                 if(error.message.includes("Token has expired")){
@@ -319,37 +296,24 @@
         },
   
         save: async function() {
-
           let token = sessionStorage.getItem("token")
-            await fetch('/api/v1/admin', {
-                method: this.editedIndex > -1 ? 'PATCH' : 'POST',
+            await fetch('/api/v1/courses/' + this.editedItem.id, {
+                method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'                    
                 },
                 body: JSON.stringify({
-                    "email": this.editedIndex > -1 ? this.editedItem.id : this.editedItem.id.id, 
-                    "role": this.editedItem.role,
+                    "name": this.editedItem.name, 
+                    "instructors": this.editedItem.instructors,                                       
                 })
             })
             .then(response => response.json().then(jdata=> ({response: response, data: jdata})))
             .then(({response, data}) => {
-                if(!response.ok){
-                    if(data.error != null){
-                        this.errors.push(data.error)
-                        throw new Error(`Error ${response.status}: ${data.error}`)
-                    } else {
-                        this.errors.push(data.msg)
-                        throw new Error(`Error ${response.status}: ${data.msg}`)
-                    }
-                }                
-                if (this.editedIndex > -1) {
-                    Object.assign(this.admins[this.editedIndex], this.editedItem)                    
-                } else {
-                    this.all_emails.splice(this.all_emails.findIndex(a => a.id === this.editedItem.id.id) , 1)
-                    this.editedItem.id.role = this.editedItem.role
-                    this.admins.push(this.editedItem.id)
+                if(!response.ok){                    
+                  throw new Error(`Error ${response.status}: ${data.msg}`)                    
                 }
+                Object.assign(this.courses[this.editedIndex], this.editedItem)
             })
             .catch(error => {
                 console.log(error)

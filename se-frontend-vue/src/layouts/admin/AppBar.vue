@@ -12,7 +12,7 @@
 
         <v-list nav>
           <v-list-item prepend-icon="mdi-home" title="Dashboard" value="dashboard" :to="{name: 'AdminDashboard'}"></v-list-item>
-          <v-list-item prepend-icon="mdi-book-open-blank-variant" title="Courses" value="courses"></v-list-item>
+          <v-list-item prepend-icon="mdi-book-open-blank-variant" title="Courses" value="courses" :to="{name: 'AdminsCourseList'}"></v-list-item>
           <v-list-item prepend-icon="mdi-account-outline" title="All Administrators" value="admins" :to="{name: 'AdminsList'}"></v-list-item>
         </v-list>
       </v-navigation-drawer>

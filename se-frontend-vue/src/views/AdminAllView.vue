@@ -243,8 +243,7 @@
             .then(({response, data}) => {
                 if(!response.ok){
                     throw new Error(`Error ${response.status}: ${data.msg}`)
-                }
-                console.log(data)
+                }                
                 for (var item in data) {
                     this.all_emails.push({
                         id: data[item].email,

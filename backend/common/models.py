@@ -92,6 +92,14 @@ class User(db.Model):
     def get_all_users_with_role(cls, roles = ['admin', 'ctm', 'im']):
         return cls.query.filter(cls.role.any(Role.role.in_(roles))).all()
 
+    @classmethod
+    def get_count_of_users_with_role(cls, roles = ['admin', 'ctm', 'im']):
+        return cls.query.filter(cls.role.any(Role.role.in_(roles))).count()
+
+    @classmethod
+    def get_count_of_student_in_level(cls, level = ['foundation', 'diploma', 'bsc', 'bs']):
+        return cls.query.filter(cls.curr_deg_level.in_(level)).count()
+    
     def __repr__(self):
         return f'{self.email}'
 
@@ -151,6 +159,10 @@ class Courses(db.Model):
     @classmethod
     def get_course_by_code(cls, code):
         return cls.query.filter_by(code=code).first()
+    
+    @classmethod
+    def get_count_of_courses_in_level(cls, level = ['foundation', 'diploma', 'bsc', 'bs']):
+        return cls.query.filter(cls.level.in_(level)).count()
 
     @classmethod
     def get_all_courses(cls, code_only = False):
