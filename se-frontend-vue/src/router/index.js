@@ -8,24 +8,31 @@ const routes = [
     children: [
       {
         path: '',
-        name: 'Login',
-        // route level code-splitting
-        // this generates a separate chunk (Home-[hash].js) for this route
-        // which is lazy-loaded when the route is visited.
+        name: 'Login',        
         component: () => import('@/views/LoginPage.vue'),
       },      
     ],    
   },
   {
+    path: '/logout',
+    name: 'Logout',    
+    beforeEnter: (to, from, next) => {
+      sessionStorage.clear()
+      next({name: "Login"})
+    },  
+  },
+  {
     path: '/admin',
     redirect: '/admin/dashboard',
     beforeEnter: (to, from, next) => {
-      let role = (sessionStorage.getItem("role") === 'admin')
-      if (!role)
+      let role = (sessionStorage.getItem("role") == 'admin')
+      if (!role){
+        console.log("You are not admin")
         next({ name: 'Login' })
+      }
       else
         next()
-    },    
+    },
     component: () => import('@/layouts/admin/Layout.vue'),
     children: [
         {

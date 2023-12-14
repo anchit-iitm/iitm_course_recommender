@@ -65,18 +65,18 @@
             .then(({response, data}) => {
                 if(!response.ok){
                     throw new Error(`Error ${response.status}: ${data.msg}`)
-                } else {
-                    this.message = "Login Successful, Redirecting"
-                    this.showAlert = true
-                    this.varient = "success"
+                } else {                    
                     sessionStorage.setItem("name", data.profile.name)
                     sessionStorage.setItem("email", data.profile.email)
                     sessionStorage.setItem("role", data.profile.role)
                     sessionStorage.setItem("token", data.auth.authToken)
+
+                    this.message = "Login Successful, Redirecting"
+                    this.showAlert = true
+                    this.varient = "success"
                     if(data.profile.role == "admin"){
                       this.$router.push({name:"AdminDashboard"})
                     }
-                    
                 }
             })
             .catch(error => {

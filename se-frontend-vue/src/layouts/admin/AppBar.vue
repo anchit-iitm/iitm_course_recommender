@@ -24,7 +24,7 @@
 
       <v-spacer></v-spacer>
 
-      <v-btn icon>
+      <v-btn :to="{name: 'Logout'}" icon>
         <v-icon>mdi-export</v-icon>
       </v-btn>
     </v-toolbar>
