@@ -1,3 +1,8 @@
+import os
+# creates log directory if not present
+log_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'logs')
+os.makedirs(log_dir, exist_ok=True)
+
 from app import create_app
 from common.database import db
 from common import models
@@ -57,6 +62,10 @@ u4 = models.User(name="An IM", email="im@xyz.com", role=[im])
 u4.set_password("abcd")
 u4.save()
 
+
+c = models.Courses.get_all_courses()[0]
+c.instructors = [u3]
+c.save()
 
 # cc = models.CompletedCourses(user_id = u1.id, course_code ="BSMA1001", completed=False)
 # cc.save()

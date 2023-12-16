@@ -68,12 +68,19 @@ from api.profile import Student
 from api.admin import SuperAdmin
 from api.recommender import Recommender
 from api.feedback import CourseFeedbackResource, FeedbackResource
+from api.student import AllStudents
+from api.course import CourseResource, CoursesResource
+from api.statistics import GeneralStatistics
 
+api_handler.add_resource(AllStudents, "/api/v1/student/all")
 api_handler.add_resource(Student, "/api/v1/profile")
 api_handler.add_resource(SuperAdmin, "/api/v1/admin")
 api_handler.add_resource(Recommender, "/api/v1/recommender")
-api_handler.add_resource(CourseFeedbackResource, '/course/<int:course_id>/feedback')
-api_handler.add_resource(FeedbackResource, '/feedback/<int:feedback_id>')
+api_handler.add_resource(CourseFeedbackResource, '/api/v1/course/<int:course_id>/feedback')
+api_handler.add_resource(FeedbackResource, '/api/v1/feedback/<int:feedback_id>')
+api_handler.add_resource(CoursesResource, '/api/v1/courses/all')
+api_handler.add_resource(CourseResource, '/api/v1/courses/<string:id>')
+api_handler.add_resource(GeneralStatistics, '/api/v1/stats/general')
 
 @app.route('/')
 def home():
