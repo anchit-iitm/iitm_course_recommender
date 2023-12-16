@@ -35,6 +35,18 @@ const routes = [
 
     ]
 },
+{
+  path: '/courseTeam',
+  redirect: '/courseTeam/dashboard',    
+  component: () => import('@/layouts/course_team/Layout.vue'),
+  children: [
+      {
+          name: 'CourseTeamDashboard',
+          path: '/courseTeam/dashboard',
+          component: () => import('@/views/CourseTeamDashboard.vue'),
+      },
+  ]
+}
 ]
 
 const router = createRouter({
