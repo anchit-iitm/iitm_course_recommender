@@ -10,6 +10,35 @@ from flask_expects_json import expects_json
 from common.response_codes import *
 from common.helpers import role_required
 
+course_schema = {
+    'type': 'object',
+    'properties': {
+        'name': {'type': 'string'},
+        'description': {'type': 'string'},
+        'level': {
+            'type': 'string',
+            'enum': ['foundation', 'diploma', 'degree']},
+        'dp_or_ds': {
+            'type': 'string',
+            'enum': ['dp', 'ds']},
+        'credits': {
+            'type': 'number',
+            'minimum': 1,
+            'maximum': 4},
+        'instructors': {
+            'type': 'array',
+            'items': {
+                'type': 'object',
+                'properties': {
+                    'email': {'type': 'string'}
+                },
+                'required': ['email']
+            }
+        }
+    },
+    'required': ['name', 'description', 'level', 'dp_or_ds', 'credits', 'instructors']
+}
+
 class CourseResource(Resource):
     # GET method for retrieving a single course by ID
     def get(self, id):
@@ -43,6 +72,7 @@ class CourseResource(Resource):
 
     # PATCH method for modifying a single course by ID
     @role_required('admin')
+    @expects_json(course_schema)
     def patch(self, id):
         try:
             # Query the database for the course with the specified ID
@@ -138,6 +168,7 @@ class CoursesResource(Resource):
 
     # POST method for adding a new course
     @role_required('admin')
+    @expects_json(course_schema)
     def post(self):
         try:
             # Parse the JSON data from the request
