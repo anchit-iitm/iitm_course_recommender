@@ -13,6 +13,9 @@
             <strong>DP or DS:</strong> {{ item.dp_or_ds }}<br>
             <strong>Credits:</strong> {{ item.credits }}
           </v-card-text>
+          <v-card-actions>
+            <v-btn @click="editCourse(item.id)">Edit</v-btn>
+          </v-card-actions>
         </v-card>
       </v-col>
     </v-row>
@@ -25,6 +28,7 @@
     data(){
       return {
         cards: [{
+          id : 1,
           code: 'CS101',
           name: 'Introduction to Computer Science',
           description: 'An introductory course covering fundamental concepts in computer science.',
@@ -34,6 +38,7 @@
           credits: 3,
         },
         {
+          id : 1,
           code: 'MATH201',
           name: 'Calculus II',
           description: 'A continuation of Calculus I, focusing on advanced calculus topics.',

@@ -26,9 +26,11 @@
 
       <!-- Conditionally render the course list based on showDropdown -->
       <v-list v-if="showDropdown">
-        <v-list-item v-for="course in courseList" :key="course" @click="handleCourseClick(course.id)">
-          <v-list-item-title>{{ course.name }}</v-list-item-title>
-        </v-list-item>
+        <router-link v-for="course in courseList" :key="course.id" :to="{ name: 'CourseFeedback', params: { courseId: course.code } }">
+            <v-list-item>
+               <v-list-item-title>{{ course.name }}</v-list-item-title>
+            </v-list-item>
+        </router-link>
       </v-list>
     </v-list>
   </v-navigation-drawer>
@@ -107,12 +109,6 @@ export default {
 
     showCoursesDropdown() {
       this.showDropdown = !this.showDropdown;
-    },
-
-    handleCourseClick(courseId) {
-      // Handle course click as needed
-      console.log(`Clicked on course ${courseId}`);
-      // You can add additional logic here
     },
   },
 };
