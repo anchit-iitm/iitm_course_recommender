@@ -1,10 +1,12 @@
 from flask_restful import Resource, abort
 from flask_login import current_user
 from flask import jsonify, request
+from flask_expects_json import expects_json
+
 from common.models import Feedback
 from common.database import db
 from common.helpers import role_required
-from common.response_codes import show_200, show_201, show_400, show_401, show_403, show_404, show_500
+from common.response_codes import *
 
 class CourseFeedbackResource(Resource):
     # GET method for retrieving feedback for a specific course
@@ -31,8 +33,19 @@ class CourseFeedbackResource(Resource):
 
         except Exception as e:
             return show_500(str(e))
+    
+    feedback_schema = {
+        'type': 'object',
+        'properties': {
+            'rating': {'type': 'number'},
+            'description': {'type': 'string'}
+        },
+        'required': ['rating', 'description']
+    }
 
     # POST method for adding feedback to a specific course
+    @role_required('student')
+    @expects_json(feedback_schema)
     def post(self, course_id):
         try:
             data = request.get_json()
