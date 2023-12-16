@@ -12,6 +12,16 @@ Courses_Instructors = db.Table('courses_intructors',
         db.Column('course', db.String(10), db.ForeignKey('courses.code')),
     )
 
+Course_Prereqs = db.Table('courses_prereqs', 
+        db.Column('course_code', db.String(10), db.ForeignKey('courses.code'), nullable=False, primary_key=True),
+        db.Column('prereq_code', db.String(10), db.ForeignKey('courses.code'), primary_key=True)
+    )
+
+Course_Coreqs = db.Table('courses_coreqs', 
+        db.Column('course_code', db.String(10), db.ForeignKey('courses.code'), nullable=False, primary_key=True),
+        db.Column('coreq_code', db.String(10), db.ForeignKey('courses.code'), primary_key=True)
+    )
+
 class CompletedCourses(db.Model):
     __tablename__ = 'user_courses'    
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, primary_key=True)
@@ -34,15 +44,6 @@ class CompletedCourses(db.Model):
     @classmethod
     def get(cls, user_id, course_code):
         return cls.query.filter_by(user_id=user_id, course_code=course_code).first()
-
-# class Course_Coreqs(db.Model):
-#         course_code = db.Column(db.String(10), db.ForeignKey('courses.code'), nullable=False)
-#         coreq_code = db.Column(db.String(10), db.ForeignKey('courses.code'))
-
-# Course_Prereqs = db.Table('courses_prereqs', 
-#         db.Column('course_code', db.String(10), db.ForeignKey('courses.code'), nullable=False),
-#         db.Column('prereq_code', db.String(10), db.ForeignKey('courses.code')),
-#     )
 
 class User(db.Model):
     __tablename__ = 'user'
@@ -91,6 +92,14 @@ class User(db.Model):
     def get_all_users_with_role(cls, roles = ['admin', 'ctm', 'im']):
         return cls.query.filter(cls.role.any(Role.role.in_(roles))).all()
 
+    @classmethod
+    def get_count_of_users_with_role(cls, roles = ['admin', 'ctm', 'im']):
+        return cls.query.filter(cls.role.any(Role.role.in_(roles))).count()
+
+    @classmethod
+    def get_count_of_student_in_level(cls, level = ['foundation', 'diploma', 'bsc', 'bs']):
+        return cls.query.filter(cls.curr_deg_level.in_(level)).count()
+    
     def __repr__(self):
         return f'{self.email}'
 
@@ -119,21 +128,21 @@ class Role(db.Model):
 
 class Courses(db.Model):
     __tablename__ = 'courses'
-    FOUNDATION = 'foundation'
-    DP = 'dp'
-    DS = 'ds'
-    BSC = 'bsc'
-    BS = 'bs'
-
     code = db.Column(db.String(10), primary_key=True)
     name = db.Column(db.String(50), nullable=False)
     description = db.Column(db.String(500))
-    difficulty_rating = db.Column(db.Float)
-    level = db.Column(db.String(10), nullable=False)
+    difficulty_rating = db.Column(db.Float, default=5)
+    level = db.Column(db.String(10), nullable=False) # foundation, diploma or degree
+    dp_or_ds = db.Column(db.String(2), nullable=False)  # dp, ds or both
+    credits = db.Column(db.Integer, nullable=False)
     instructors = db.relationship('User', secondary=Courses_Instructors, backref=db.backref('courses'))
+    pre_reqs = db.relationship('Courses', secondary = Course_Prereqs, primaryjoin = (Course_Prereqs.c.prereq_code == code), secondaryjoin = (Course_Prereqs.c.course_code == code))    
+    co_reqs = db.relationship('Courses', secondary = Course_Coreqs, primaryjoin = (Course_Coreqs.c.coreq_code == code),secondaryjoin = (Course_Coreqs.c.course_code == code))
 
-    #co_requisites = db.relationship('Courses', secondary = Course_Coreqs, foreign_keys='[Course_Coreqs.course_code]')
-    #pre_requisites = db.relationship('Courses', secondary = Course_Prereqs, foreign_keys='[courses_prereqs.course_code]')
+    FOUNDATION = 'foundation'
+    DIPLOMA = 'diploma'
+    DEGREE = 'degree'
+
 
     def save(self):
         db.session.add(self)
@@ -150,7 +159,17 @@ class Courses(db.Model):
     @classmethod
     def get_course_by_code(cls, code):
         return cls.query.filter_by(code=code).first()
+    
+    @classmethod
+    def get_count_of_courses_in_level(cls, level = ['foundation', 'diploma', 'bsc', 'bs']):
+        return cls.query.filter(cls.level.in_(level)).count()
 
+    @classmethod
+    def get_all_courses(cls, code_only = False):
+        if not code_only:
+            return cls.query.all()
+        else:
+            return [i[0] for i in cls.query.with_entities(cls.code).all()]
 
 class Recommendations(db.Model):
     __tablename__ = 'recommend'
@@ -185,3 +204,15 @@ class Feedback(db.Model):
     def delete(self):
         db.session.delete(self)
         db.session.commit()
+    
+    @classmethod
+    def get_all_feedback(cls):
+        return cls.query.all()
+
+    @classmethod
+    def get_feedback_by_id(cls, id):
+        return cls.query.filter_by(id=id).first()
+    
+    @classmethod
+    def get_feedback_by_course(cls, course):
+        return cls.query.filter_by(course=course).all()
