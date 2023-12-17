@@ -30,7 +30,7 @@ class CourseResource(Resource):
     def patch(self, id):
         try:
             # Query the database for the course with the specified ID
-            course = Courses.query.get(id)
+            course = Courses.get_course_by_code(id)
 
             if not course:
                 return show_404('Course not found')
