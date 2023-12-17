@@ -41,8 +41,10 @@ class CourseFeedbackResource(Resource):
             return show_500()
 
     # POST method for adding feedback to a specific course
+    @jwt_required()
     def post(self, course_id):
         try:
+            current_user = get_jwt_identity()
             data = request.get_json()
 
             new_feedback = Feedback(
@@ -65,8 +67,10 @@ class CourseFeedbackResource(Resource):
 
 class FeedbackResource(Resource):
     # GET method for adding upvote to a feedback
+    @jwt_required()
     def get(self, feedback_id):
         try:
+            current_user = get_jwt_identity()
             feedback = Feedback.get_feedback_by_id(feedback_id)
 
             if not feedback:
