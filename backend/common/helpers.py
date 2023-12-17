@@ -12,10 +12,17 @@ def role_required(role):
         def decorator(*args, **kwargs):
             verify_jwt_in_request()
             claims = get_jwt()
-            if claims["role"] == role:
-                return fn(*args, **kwargs)
+
+            if type(role) in [list, tuple]:
+                if claims["role"] in role:
+                    return fn(*args, **kwargs)
+                else:
+                    return show_403()
             else:
-                return show_403()
+                if claims["role"] == role:
+                    return fn(*args, **kwargs)
+                else:
+                    return show_403()
         return decorator
     return wrapper
 
@@ -40,11 +47,13 @@ def add_bulk_from_csv(csv_file_abs_path):
         if prereq_codes_list:
             for a_prereq_code in prereq_codes_list:
                 c = Courses.get_course_by_code(a_prereq_code)
-                cx.pre_reqs.append(c)
+                if c is not None:
+                    cx.pre_reqs.append(c)
         
         if coreq_codes_list:
             for a_coreq_code in coreq_codes_list:
                 c = Courses.get_course_by_code(a_coreq_code)
-                cx.co_reqs.append(c)
+                if c is not None:
+                    cx.co_reqs.append(c)
 
         cx.save()

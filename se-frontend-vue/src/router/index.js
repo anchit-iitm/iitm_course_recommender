@@ -10,7 +10,17 @@ const routes = [
         path: '',
         name: 'Login',        
         component: () => import('@/views/LoginPage.vue'),
-      },      
+      },
+      {
+        path: '/student/home',
+        name: 'StudentHome',
+        component: () => import('@/views/student/HomePage.vue'),
+      },
+      {
+        path: '/course/:id',
+        name: 'CourseView',
+        component: () => import('@/views/student/CoursePage.vue'),
+      },
     ],    
   },
   {

@@ -13,11 +13,12 @@ import App from './App.vue'
 
 // Composables
 import { createApp } from 'vue'
+import CourseCard from './components/CourseCard.vue'
 
 const app = createApp(App)
 app.config.globalProperties.$hostname = 'http://localhost:3000'
 app.config.globalProperties.$api = 'http://localhost:5000/api/v1'
 
 registerPlugins(app)
-
+app.component('CourseCard', CourseCard)
 app.mount('#app')

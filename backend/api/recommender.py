@@ -39,7 +39,7 @@ class Recommender(Resource):
                     if prereqs not in self.completed_courses:
                         keep = False
             
-            if self.level != pendingCourse.level:
+            if self.level != pendingCourse.level:                
                 keep = False
 
             if keep:                
@@ -54,7 +54,7 @@ class Recommender(Resource):
             self.dp_or_ds = 'both'
             possible_next_courses = self.__filter_prereqs()
         
-        if len(possible_next_courses) == 0:
+        if len(possible_next_courses) == 0:                
             self.dp_or_ds = old_dp_or_ds
             self.level = 'diploma' if self.level == 'foundation' else 'degree'
             possible_next_courses = self.__filter_prereqs()
@@ -127,11 +127,11 @@ class Recommender(Resource):
 
         return_object = {
             "no_courses": self.max_subjects,
-            "upcoming_term": [i.name for i in r],
+            "upcoming_term": [i.code for i in r],
             "matrix_order": []
         }
         while(len(r) > 0):
-            return_object["matrix_order"].append([i.name for i in r])
+            return_object["matrix_order"].append([{"id": i.code, "name":i.name} for i in r])
             for i in r:
                 self.completed_courses.append(i)
                 self.pending_courses.remove(i)

@@ -170,6 +170,28 @@ class Courses(db.Model):
             return cls.query.all()
         else:
             return [i[0] for i in cls.query.with_entities(cls.code).all()]
+    
+    @classmethod
+    def obj_to_dict(cls, course):
+        return {
+                'id': course.code,
+                'name': course.name,
+                'description': course.description,
+                'difficulty_rating': course.difficulty_rating,
+                'level': course.level,
+                'pre_req': [prerequisite.code for prerequisite in course.pre_reqs],
+                'co_req': [corequisite.code for corequisite in course.co_reqs],
+                # 'availability': [availability for availability in course.availability],
+                'instructors': [
+                    {'name': instructor.name, 'email': instructor.email}
+                    for instructor in course.instructors
+                ]
+            }
+
+    @classmethod
+    def get_course_by_code_as_dict(cls, code):
+        course = cls.query.filter_by(code=code).first()
+        return cls.obj_to_dict(course)
 
 class Recommendations(db.Model):
     __tablename__ = 'recommend'

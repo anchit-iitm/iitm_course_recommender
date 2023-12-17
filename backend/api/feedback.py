@@ -1,36 +1,44 @@
 from flask_restful import Resource, abort
-from flask_login import current_user
+from flask import current_app as app
 from flask import jsonify, request
-from common.models import Feedback
-from common.database import db
+from common.models import *
+
+from flask_restful import Resource
+from flask_jwt_extended import get_jwt_identity
+from flask_jwt_extended import jwt_required
+from flask_expects_json import expects_json
+
+from common.response_codes import *
 from common.helpers import role_required
-from common.response_codes import show_200, show_201, show_400, show_401, show_403, show_404, show_500
 
 class CourseFeedbackResource(Resource):
     # GET method for retrieving feedback for a specific course
     def get(self, course_id):
         try:
-            feedbacks = Feedback.get_all_feedback()
+            feedbacks = Feedback.get_feedback_by_course(course_id)
 
-            if not feedbacks:
-                abort(404, 'No Feedback found')
+            if not feedbacks:                
+                return make_response(jsonify([]), 200)
 
             feedbacks_data = [
                 {
                     'id': feedback.id,
-                    'poster': feedback.user.email,
-                    'pic': feedback.user.pic,
+                    'poster': User.get_user_by_jwt(feedback.user).email,
+                    # 'pic': feedback.user.pic,
                     'rating': feedback.rating,
                     'description': feedback.description,
-                    'time': feedback.time.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+                    'likes': feedback.likes,
+                    'dislikes': feedback.dislikes
+                    # 'time': feedback.time.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
                 }
                 for feedback in feedbacks
             ]
 
-            return show_200('Feedbacks found', {'feedbacks': feedbacks_data})
+            return make_response(jsonify(feedbacks_data), 200)
 
         except Exception as e:
-            return show_500(str(e))
+            app.logger.exception(e)
+            return show_500()
 
     # POST method for adding feedback to a specific course
     def post(self, course_id):
@@ -52,7 +60,7 @@ class CourseFeedbackResource(Resource):
         except Exception as e:
             # Rollback changes in case of an exception
             db.session.rollback()
-            return show_500(str(e))
+            return show_500()
 
 
 class FeedbackResource(Resource):
@@ -73,7 +81,7 @@ class FeedbackResource(Resource):
             return show_400('User has already upvoted')
 
         except Exception as e:
-            return show_500(str(e))
+            return show_500()
 
     # DELETE method for deleting feedback
     def delete(self, feedback_id):
@@ -94,4 +102,4 @@ class FeedbackResource(Resource):
         except Exception as e:
             # Rollback changes in case of an exception
             db.session.rollback()
-            return show_500(str(e))
+            return show_500()

@@ -1,6 +1,6 @@
 import os, logging
 
-from flask import Flask
+from flask import Flask, render_template, abort
 from logging.config import dictConfig
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
@@ -41,7 +41,7 @@ api = None
 jwt = None
 
 def create_app():
-    app = Flask(__name__, template_folder='templates')
+    app = Flask(__name__, template_folder='templates', static_folder='assets')
     app.config.from_object(LocalDev)
 
     db.init_app(app)
@@ -76,7 +76,7 @@ api_handler.add_resource(AllStudents, "/api/v1/student/all")
 api_handler.add_resource(Student, "/api/v1/profile")
 api_handler.add_resource(SuperAdmin, "/api/v1/admin")
 api_handler.add_resource(Recommender, "/api/v1/recommender")
-api_handler.add_resource(CourseFeedbackResource, '/api/v1/course/<int:course_id>/feedback')
+api_handler.add_resource(CourseFeedbackResource, '/api/v1/course/<string:course_id>/feedback')
 api_handler.add_resource(FeedbackResource, '/api/v1/feedback/<int:feedback_id>')
 api_handler.add_resource(CoursesResource, '/api/v1/courses/all')
 api_handler.add_resource(CourseResource, '/api/v1/courses/<string:id>')
@@ -84,7 +84,11 @@ api_handler.add_resource(GeneralStatistics, '/api/v1/stats/general')
 
 @app.route('/')
 def home():
-    return "Hi"
+    try:        
+        return render_template('index.html')
+    except:
+        app.logger.exception("error occurred")
+        abort(500)
 
 if __name__ == '__main__':
     app.run()
