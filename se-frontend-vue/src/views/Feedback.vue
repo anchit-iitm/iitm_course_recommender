@@ -97,7 +97,7 @@
           console.error('Error fetching data:', error);
         }
       },
-      getStarIcon(rating) {
+      getStarIcon() {
         return 'mdi-star-outline';
       },
       getLikeIcon() {

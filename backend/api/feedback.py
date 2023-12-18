@@ -2,6 +2,7 @@ from flask_restful import Resource, abort
 from flask import current_app as app
 from flask import jsonify, request
 from common.models import *
+import math
 
 from flask_restful import Resource
 from flask_jwt_extended import get_jwt_identity
@@ -10,6 +11,7 @@ from flask_expects_json import expects_json
 
 from common.response_codes import *
 from common.helpers import role_required
+from datetime import datetime
 
 class CourseFeedbackResource(Resource):
     # GET method for retrieving feedback for a specific course
@@ -19,7 +21,7 @@ class CourseFeedbackResource(Resource):
 
             if not feedbacks:                
                 return make_response(jsonify([]), 200)
-
+            
             feedbacks_data = [
                 {
                     'id': feedback.id,
@@ -28,8 +30,8 @@ class CourseFeedbackResource(Resource):
                     'rating': feedback.rating,
                     'description': feedback.description,
                     'likes': feedback.likes,
-                    'dislikes': feedback.dislikes
-                    # 'time': feedback.time.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+                    'dislikes': feedback.dislikes,
+                    'time': datetime.strptime(feedback.time, "%Y-%m-%d %H:%M:%S").strftime('%H:%M, %B %d, %Y')
                 }
                 for feedback in feedbacks
             ]
@@ -49,19 +51,17 @@ class CourseFeedbackResource(Resource):
 
             new_feedback = Feedback(
                 user=current_user,
-                course_id=course_id,
-                rating=data.get('rating'),
+                course=course_id,
+                rating=round(data.get('rating'), 1),
                 description=data.get('description')
             )
 
-            db.session.add(new_feedback)
-            db.session.commit()
-
+            new_feedback.save()
             return show_201('New feedback added successfully')
 
         except Exception as e:
             # Rollback changes in case of an exception
-            db.session.rollback()
+            app.logger.exception(e)            
             return show_500()
 
 
@@ -88,20 +88,20 @@ class FeedbackResource(Resource):
             return show_500()
 
     # DELETE method for deleting feedback
+    @jwt_required()
     def delete(self, feedback_id):
         try:
             feedback = Feedback.get_feedback_by_id(feedback_id)
 
             if not feedback:
-                abort(404, 'Feedback not found')
-
+                return show_404("Feedback not found")
+            
             # Check if the user has upvoted before deleting
-            if current_user.id in [upvote.user.id for upvote in feedback.upvotes]:
-                feedback.likes -= 1
-                feedback.save()
-                return show_200('Upvote deleted successfully')
-
-            return show_403('User has not upvoted')
+            if feedback.user == get_jwt_identity():
+                feedback.delete()                
+                return show_200()
+            else:
+                return show_403("Not your feedback")
 
         except Exception as e:
             # Rollback changes in case of an exception

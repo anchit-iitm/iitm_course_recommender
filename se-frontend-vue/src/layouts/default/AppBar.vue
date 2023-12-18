@@ -20,6 +20,8 @@
         :to="{name:'StudentProfile'}"></v-list-item>
       <v-list-item prepend-icon="mdi-book-open-blank-variant" title="Completed Courses" value="courses"
         :to="{ name: 'CompletedCourses' }"></v-list-item>
+        <v-list-item prepend-icon="mdi-book-open-blank-variant" title="All Courses" value="allcourses"
+        :to="{ name: 'AllCourses' }"></v-list-item>
         
     </v-list>
 

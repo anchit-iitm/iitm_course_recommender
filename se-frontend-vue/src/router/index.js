@@ -61,6 +61,12 @@ const routes = (app) => [
         beforeEnter: [requireLogin],
       },
       {
+        path: '/courses/all',
+        name: 'AllCourses',
+        component: () => import('@/views/student/AllCourses.vue'),
+        beforeEnter: [requireLogin],
+      },
+      {
         name: 'StudentProfile',
         path: '/student/profile',
         component: () => import('@/views/ProfilePage.vue'),
