@@ -198,12 +198,6 @@
                     throw new Error(`Error ${response.status}: ${data.msg}`)
                 }
                 this.courses = data
-
-                
-                // let courses_list = data.filter((item) => {                    
-                //     let instructors = item.instructors.filter((ins) => ins.email)
-                //     return instructors.includes(sessionStorage.getItem("token"))
-                //   })
                 
             })
             .catch(error => {                                

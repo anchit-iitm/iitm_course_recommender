@@ -63,7 +63,7 @@
             .then(({response, data}) => {
                 if(!response.ok){
                     throw new Error(`${data.message}`)
-                } else {                    
+                } else {
                     sessionStorage.setItem("name", data.profile.name)
                     sessionStorage.setItem("email", data.profile.email)
                     sessionStorage.setItem("role", data.profile.role)

@@ -131,12 +131,14 @@ export default {
                 name: "",
                 description: "",
                 active: true,
-                width: 300,
+                width: 0,
+                height: 0
               },
             }
 
             aCombination.forEach((subject) => { node.data.name += subject.name + "\n" }),
-            node.data.width = node.data.name.length*7
+            node.data.width = node.data.name.split('\n').reduce(function (a, b) {return a.length > b.length ? a : b;}).length*10
+            node.data.height = (node.data.name.match(/\n/g) || []).length * 20
 
               this.nodes.push(node)
             i++
@@ -169,7 +171,7 @@ export default {
           .selector("node")
           .css({
             shape: "roundrectangle",
-            height: 50,
+            height: "data(height)",
             width: "data(width)",
             "background-color": (node) =>
               node.data("active") ? "white" : "white",

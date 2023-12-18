@@ -17,15 +17,15 @@
       <v-list-item prepend-icon="mdi-home" title="Dashboard" value="dashboard"
         :to="{ name: 'StudentHome' }"></v-list-item>
         <v-list-item prepend-icon="mdi-human" title="My Profile" value="profile"
-        ></v-list-item>
+        :to="{name:'StudentProfile'}"></v-list-item>
       <v-list-item prepend-icon="mdi-book-open-blank-variant" title="Completed Courses" value="courses"
         :to="{ name: 'CompletedCourses' }"></v-list-item>
         
     </v-list>
 
     <template v-slot:append>
-      <v-list-item height="70" prepend-avatar="https://randomuser.me/api/portraits/men/85.jpg" :title="user"
-        :subtitle="email" nav>
+      <v-list-item height="70" prepend-avatar="@/assets/user.png" :title="user"
+        :subtitle="email" nav>        
       </v-list-item>
       <div class="pa-2">
         <v-btn block :to="{ name: 'Logout' }">
@@ -48,7 +48,7 @@ export default {
     };
   },
 
-  created() {
+  mounted() {
     this.initialize();
   },
 

@@ -126,7 +126,7 @@ class Student(Resource):
             student.curr_deg_level = request.json.get("current_degree_level", student.curr_deg_level)
             student.ds_or_dp = request.json.get("dp_or_ds", student.ds_or_dp)
 
-            current_courses = request.json.get("current_courses", None)            
+            current_courses = request.json.get("current_courses", None)
             if current_courses:
                 # current_courses is recieved in the API
                 for code in current_courses:
@@ -188,4 +188,10 @@ class Student(Resource):
         Requires user info in the form of JWT Bearer Token, returns JSON Response of success.
         '''
         # since the steps of patching and posting are same, we call the above method only for the patch
+        user = get_jwt_identity()
+        oldCourses = CompletedCourses.get_current_and_completed_courses_by_user(user)
+
+        for course in oldCourses:
+            course.delete()
+
         return self.post(patch=True)

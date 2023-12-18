@@ -38,6 +38,10 @@ class CompletedCourses(db.Model):
         db.session.commit()
     
     @classmethod
+    def get_current_and_completed_courses_by_user(cls, user_id):
+        return cls.query.filter_by(user_id=user_id).all()
+
+    @classmethod
     def has(cls, user_id, course_code):
         return cls.query.filter_by(user_id=user_id, course_code=course_code).first() is not None
 

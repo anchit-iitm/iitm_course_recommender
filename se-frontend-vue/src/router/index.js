@@ -54,6 +54,12 @@ const routes = (app) => [
         component: () => import('@/views/student/CompletedCourses.vue'),
         beforeEnter: [requireLogin],
       },
+      {
+        name: 'StudentProfile',
+        path: '/student/profile',
+        component: () => import('@/views/ProfilePage.vue'),
+        beforeEnter: [requireLogin],
+      }
     ],    
   },
   {
@@ -127,17 +133,6 @@ const routes = (app) => [
       },
   ]
 },
-{
-  path:'/student/profile',
-  component:() => import('@/layouts/default/Default.vue'),
-  children: [
-    {
-      name: 'StudentProfile',
-      path: '/student/profile',
-      component: () => import('@/views/ProfilePage.vue'),
-    }
-  ]
-}
 ]
 
 const router = (app) => createRouter({
