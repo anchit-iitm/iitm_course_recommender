@@ -69,6 +69,15 @@ const routes = [
   path: '/courseTeam',
   redirect: '/courseTeam/dashboard',    
   component: () => import('@/layouts/course_team/Layout.vue'),
+  beforeEnter: (to, from, next) => {
+    let role = (sessionStorage.getItem("role") == 'ctm')
+    if (!role){
+      console.log("You are not ctm")
+      next({ name: 'Login' })
+    }
+    else
+      next()
+  },
   children: [
       {
         name: 'CourseTeamDashboard',

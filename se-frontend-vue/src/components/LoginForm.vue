@@ -86,6 +86,8 @@
                       this.$router.push({name:"AdminDashboard"})
                     } else if(data.profile.role == "student"){
                       this.$router.push({name:"StudentHome"})
+                    } else if(data.profile.role == "ctm"){
+                      this.$router.push({name:"CourseTeamDashboard"})                      
                     }
                 }
             })

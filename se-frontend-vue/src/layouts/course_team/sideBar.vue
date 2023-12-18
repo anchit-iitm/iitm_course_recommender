@@ -25,13 +25,16 @@
       ></v-list-item>
 
       <!-- Conditionally render the course list based on showDropdown -->
-      <v-list v-if="showDropdown">
+      <v-list-item v-if="showDropdown" v-for="course in courseList" :key="course.id" :to="{ name: 'CourseFeedback', params: { courseId: course.code } }">
+        <v-list-item-title>{{ course.name }}</v-list-item-title>
+      </v-list-item>
+      <!-- <v-list v-if="showDropdown">
         <router-link v-for="course in courseList" :key="course.id" :to="{ name: 'CourseFeedback', params: { courseId: course.code } }">
             <v-list-item>
                <v-list-item-title>{{ course.name }}</v-list-item-title>
             </v-list-item>
         </router-link>
-      </v-list>
+      </v-list> -->
     </v-list>
   </v-navigation-drawer>
 
@@ -42,7 +45,7 @@
 
     <v-spacer></v-spacer>
 
-    <v-btn icon>
+    <v-btn icon :to="{name: 'Logout'}">
       <v-icon>mdi-export</v-icon>
     </v-btn>
   </v-toolbar>
@@ -98,10 +101,10 @@ export default {
 
         const data = await response.json();
         // Filter the courses based on the user's token
-        this.courseList = data.filter((course) => {
-          const instructors = course.instructors.map((ins) => ins.email);
-          return instructors.includes(sessionStorage.getItem('email'));
-        });
+        // this.courseList = data.filter((course) => {
+        //   const instructors = course.instructors.map((ins) => ins.email);
+        //   return instructors.includes(sessionStorage.getItem('email'));
+        // });
       } catch (error) {
           console.log(error);
       }
