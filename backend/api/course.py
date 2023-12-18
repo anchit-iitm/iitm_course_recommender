@@ -55,8 +55,7 @@ class CourseResource(Resource):
             return show_500()
 
     # PATCH method for modifying a single course by ID
-    @role_required('admin')
-    @expects_json(course_schema)
+    # @role_required('admin')
     def patch(self, id):
         try:
             # Query the database for the course with the specified ID
@@ -120,7 +119,7 @@ class CoursesResource(Resource):
         try:
             # Query the database for all courses
             courses = Courses.get_all_courses()
-            app.logger.info(courses)
+            # app.logger.info(courses)
 
             if not courses:
                 return show_404('No courses found')
@@ -133,6 +132,8 @@ class CoursesResource(Resource):
                     'description': course.description,
                     'difficulty_rating': course.difficulty_rating,
                     'level': course.level,
+                    'credits': course.credits,
+                    'dp_or_ds': course.dp_or_ds,
                     'pre_req': [prerequisite.code for prerequisite in course.pre_reqs],
                     'co_req': [corequisite.code for corequisite in course.co_reqs],
                     # 'availability': [availability for availability in course.availability],
