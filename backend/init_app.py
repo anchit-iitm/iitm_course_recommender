@@ -100,7 +100,7 @@ for i in allStudents:
     for j in random.sample(allCourses, random.randint(5,len(allCourses))):
         if len(j.pre_reqs) == 0 and len(j.co_reqs) == 0:
             isCompleted = random.choice([True, False])
-            cc = models.CompletedCourses(user_id = i.id, course_code =j.code, completed=random.choice([True, False]), marks= random.randint(1,99) if isCompleted else None)
+            cc = models.CompletedCourses(user_id = i.id, course_code =j.code, completed=random.choice([True, False]), marks= random.randint(1,99) if isCompleted else 0)
             cc.save()
     
             f = models.Feedback(    
