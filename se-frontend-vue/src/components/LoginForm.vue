@@ -32,7 +32,7 @@
                       <v-btn block type="submit" class="fill-width" color="primary" value="log in">Login</v-btn>
                 </v-form>
                   <div class="mt-2">
-                      <p class="text-body-2">Don't have an account? <a href="#">Sign Up</a></p>
+                    Don't have an account? <router-link to="/register">Sign Up</router-link>
                   </div>
                 </v-card-text>
             </v-card>
