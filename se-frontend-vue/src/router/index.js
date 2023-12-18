@@ -90,6 +90,17 @@ const routes = [
         component: () => import('@/views/CourseFeedback.vue'),
       },
   ]
+},
+{
+  path:'/student/profile',
+  component:() => import('@/layouts/default/Default.vue'),
+  children: [
+    {
+      name: 'StudentProfile',
+      path: '/student/profile',
+      component: () => import('@/views/ProfilePage.vue'),
+    }
+  ]
 }
 ]
 
