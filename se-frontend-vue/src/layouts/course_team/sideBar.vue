@@ -18,8 +18,8 @@
 
       <!-- Conditionally render the course list based on showDropdown -->
       <v-list-item prepend-icon="mdi-arrow-right-thin" v-if="showDropdown" v-for="course in courseList" :key="course.id"
-        :to="{ name: 'CourseFeedback', params: { courseId: course.code } }">
-        <v-list-item-title>{{ course.code }}</v-list-item-title>
+        :to="{ name: 'CourseFeedback', params: { courseId: course.id } }">
+        <v-list-item-title>{{ course.id }}</v-list-item-title>
         <v-list-item-subtitle>{{ course.name }}</v-list-item-subtitle>
       </v-list-item>
       <!-- <v-list v-if="showDropdown">
@@ -57,7 +57,7 @@
 export default {
   data() {
     return {
-      showDropdown: false,
+      showDropdown: true,
       drawer: true,
       rail: false,
       user: sessionStorage.getItem('name'),
