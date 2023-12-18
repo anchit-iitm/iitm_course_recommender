@@ -46,7 +46,7 @@ for i in users:
     x.set_password("abcd")
     x.save()
 
-u1 = models.User(name="A Student", email="abc@xyz.com", role=[stu], pic="abcd.png", max_subjects=2, curr_deg_level="foundation", ds_or_dp="dp")
+u1 = models.User(name="A Student", email="abc@xyz.com", role=[stu], pic="abcd.png", max_subjects=2, curr_deg_level="foundation", ds_or_dp="both")
 u1.set_password("abcd")
 u1.save()
 
@@ -67,11 +67,23 @@ c = models.Courses.get_all_courses()[0]
 c.instructors = [u3]
 c.save()
 
-# cc = models.CompletedCourses(user_id = u1.id, course_code ="BSMA1001", completed=False)
-# cc.save()
+cc = models.CompletedCourses(user_id = u1.id, course_code ="BSMA1001", completed=True, marks=50)
+cc.save()
 
-# cc2 = models.CompletedCourses(user_id = u1.id, course_code = "BSMA1002", marks=100, completed=True)
-# cc2.save()
+cc2 = models.CompletedCourses(user_id = u1.id, course_code = "BSMA1002", completed=False)
+cc2.save()
+
+f = models.Feedback(    
+    user = u1.id,
+    course = models.Courses.get_course_by_code("BSCS1001").code,
+    rating = 9.1,
+    description = "Very Difficult Course",
+    likes = 10,
+    dislikes = 1
+)
+
+f.save()
+    
 
 # cc = models.CompletedCourses(user_id = u1.id, course_code ="BSCS1001", completed=False)
 # cc.save()

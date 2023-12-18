@@ -12,9 +12,9 @@ export default defineConfig({
   plugins: [
     vue({
       template: { transformAssetUrls },
-      devServer: {        
-        proxy: 'http://localhost:5000/',
-        }
+      // devServer: {        
+      //   proxy: 'http://localhost:5000/',
+      //   }
     }),
     // https://github.com/vuetifyjs/vuetify-loader/tree/master/packages/vite-plugin#readme
     vuetify({

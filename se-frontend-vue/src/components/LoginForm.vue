@@ -53,8 +53,8 @@
           message: null,
           color: null
         },
-        username: "",
-        password: "",
+        username: "abc@xyz.com",
+        password: "abcd",
         showAlert: false,
         varient: "success",
         message: "Hi"
@@ -84,6 +84,10 @@
                     }
                     if(data.profile.role == "admin"){
                       this.$router.push({name:"AdminDashboard"})
+                    } else if(data.profile.role == "student"){
+                      this.$router.push({name:"StudentHome"})
+                    } else if(data.profile.role == "ctm"){
+                      this.$router.push({name:"CourseTeamDashboard"})                      
                     }
                 }
             })

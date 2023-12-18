@@ -10,7 +10,17 @@ const routes = [
         path: '',
         name: 'Login',        
         component: () => import('@/views/LoginPage.vue'),
-      },      
+      },
+      {
+        path: '/student/home',
+        name: 'StudentHome',
+        component: () => import('@/views/student/HomePage.vue'),
+      },
+      {
+        path: '/course/:id',
+        name: 'CourseView',
+        component: () => import('@/views/student/CoursePage.vue'),
+      },
     ],    
   },
   {
@@ -55,6 +65,43 @@ const routes = [
 
     ]
 },
+{
+  path: '/courseTeam',
+  redirect: '/courseTeam/dashboard',    
+  component: () => import('@/layouts/course_team/Layout.vue'),
+  beforeEnter: (to, from, next) => {
+    let role = (sessionStorage.getItem("role") == 'ctm')
+    if (!role){
+      console.log("You are not ctm")
+      next({ name: 'Login' })
+    }
+    else
+      next()
+  },
+  children: [
+      {
+        name: 'CourseTeamDashboard',
+        path: '/courseTeam/dashboard',
+        component: () => import('@/views/CourseTeamDashboard.vue'),
+      },
+      {
+        path: '/course/:courseId/feedback',
+        name: 'CourseFeedback',
+        component: () => import('@/views/CourseFeedback.vue'),
+      },
+  ]
+},
+{
+  path:'/student/profile',
+  component:() => import('@/layouts/default/Default.vue'),
+  children: [
+    {
+      name: 'StudentProfile',
+      path: '/student/profile',
+      component: () => import('@/views/ProfilePage.vue'),
+    }
+  ]
+}
 ]
 
 const router = createRouter({
@@ -62,7 +109,7 @@ const router = createRouter({
   routes,
 })
 
-router.beforeEach((to, from, next) => {
+/* router.beforeEach((to, from, next) => {
   const isAuthenticated = (sessionStorage.getItem("token") === null) ? false : true;
   if (!isAuthenticated) {
     if (to.name !== 'Login' && to.name !== 'Register'){ 
@@ -70,6 +117,6 @@ router.beforeEach((to, from, next) => {
     } else next()
   }
   else next()
-})
+}) */
 
 export default router

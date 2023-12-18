@@ -49,23 +49,7 @@ class CourseResource(Resource):
             if not course:
                 return show_404('Course not found')
 
-            # Format course data for response
-            course_data = {
-                'id': course.code,
-                'name': course.name,
-                'description': course.description,
-                'difficulty_rating': course.difficulty_rating,
-                'level': course.level,
-                'pre_req': [prerequisite.code for prerequisite in course.pre_reqs],
-                'co_req': [corequisite.code for corequisite in course.co_reqs],
-                # 'availability': [availability for availability in course.availability],
-                'instructors': [
-                    {'name': instructor.name, 'email': instructor.email}
-                    for instructor in course.instructors
-                ]
-            }
-
-            return make_response(jsonify(course_data), 200)
+            return make_response(jsonify(Courses.get_course_by_code_as_dict(id)), 200)
 
         except Exception as e:
             return show_500()
