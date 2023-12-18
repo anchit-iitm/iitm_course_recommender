@@ -1,85 +1,86 @@
 <template>
     <v-container fill-height fluid class="down-top-padding">
       <v-row>        
-        <v-col cols="3" lg="4">          
+        <v-col cols="3" lg="4">
           <v-card elevation="3">
-            <v-card-title class="text-center">{{ cards[0].title }}</v-card-title>
+            <v-card-title>{{ cards[0].title }}</v-card-title>
             <v-divider />
-            <v-table>
-              <tbody>
-                <tr>
-                  <td>Total</td>
-                  <td>{{ cards[0].data.total }}</td>
-                </tr>
-                <tr>
-                  <td>Foundation</td>
-                  <td>{{ cards[0].data.foundation }}</td>
-                </tr>
-                <tr>
-                  <td>Diploma</td>
-                  <td>{{ cards[0].data.diploma }}</td>
-                </tr>
-                <tr>
-                  <td>BSc</td>
-                  <td>{{ cards[0].data.bsc }}</td>
-                </tr>
-                <tr>
-                  <td>BS</td>
-                  <td>{{ cards[0].data.bs }}</td>
-                </tr>
-              </tbody>
-            </v-table>
+            <v-list>
+              <v-list-item>                
+                <span class="float-left">Total</span>
+                <span class="float-right">{{ cards[0].data.total }}</span>
+              </v-list-item>
+              <v-list-item>                
+                <span class="float-left">Foundation</span>
+                <span class="float-right">{{ cards[0].data.foundation }}</span>
+              </v-list-item>
+              <v-list-item>                
+                <span class="float-left">Diploma</span>
+                <span class="float-right">{{ cards[0].data.diploma }}</span>
+              </v-list-item>
+              <v-list-item>                
+                <span class="float-left">BSc</span>
+                <span class="float-right">{{ cards[0].data.bsc }}</span>
+              </v-list-item>
+              <v-list-item>                
+                <span class="float-left">BS</span>
+                <span class="float-right">{{ cards[0].data.bs }}</span>
+              </v-list-item>
+            </v-list>
           </v-card>
         </v-col>
 
         <v-col cols="3" lg="4">          
           <v-card elevation="3">
-            <v-card-title class="text-center">{{ cards[1].title }}</v-card-title>
+            <v-card-title>{{ cards[1].title }}</v-card-title>
             <v-divider />
-            <v-table>
-              <tbody>
-                <tr>
-                  <td>Total</td>
-                  <td>{{ cards[1].data.total }}</td>
-                </tr>
-                <tr>
-                  <td>Foundation</td>
-                  <td>{{ cards[1].data.foundation }}</td>
-                </tr>
-                <tr>
-                  <td>Diploma</td>
-                  <td>{{ cards[1].data.diploma }}</td>
-                </tr>
-                <tr>
-                  <td>Degree</td>
-                  <td>{{ cards[1].data.degree }}</td>
-                </tr>
-              </tbody>
-            </v-table>
+            <v-list>
+              <v-list-item>                
+                <span class="float-left">Total</span>
+                <span class="float-right">{{ cards[1].data.total }}</span>
+              </v-list-item>
+              <v-list-item>                
+                <span class="float-left">Foundation</span>
+                <span class="float-right">{{ cards[1].data.foundation }}</span>
+              </v-list-item>
+              <v-list-item>                
+                <span class="float-left">Diploma</span>
+                <span class="float-right">{{ cards[1].data.diploma }}</span>
+              </v-list-item>
+              <v-list-item>                
+                <span class="float-left">Degree</span>
+                <span class="float-right">{{ cards[1].data.degree }}</span>
+              </v-list-item>
+            </v-list>
+            <v-card-actions>
+              <v-btn color="primary" block :to="{name: 'AdminsCourseList'}">View all courses</v-btn>
+            </v-card-actions>
           </v-card>
         </v-col>
 
         <v-col cols="3" lg="4">          
           <v-card elevation="3">
-            <v-card-title class="text-center">{{ cards[2].title }}</v-card-title>
+            <v-card-title>{{ cards[2].title }}</v-card-title>
             <v-divider />
-            <!-- <v-card-text>{{ item.text }}</v-card-text> -->
+            <v-list>
+              <v-list-item>                
+                <span class="float-left">Admins</span>
+                <span class="float-right">{{ cards[2].data.superadmins }}</span>
+              </v-list-item>
+              <v-list-item>                
+                <span class="float-left">Course Team Members</span>
+                <span class="float-right">{{ cards[2].data.ctm }}</span>
+              </v-list-item>
+              <v-list-item>                
+                <span class="float-left">IITM Management</span>
+                <span class="float-right">{{ cards[2].data.management }}</span>
+              </v-list-item>
+            </v-list>
             <v-table>
-              <tbody>
-              <tr>
-                <td>Admins</td>
-                <td>{{ cards[2].data.superadmins }}</td>
-              </tr>
-              <tr>
-                <td>Course Team Members</td>
-                <td>{{ cards[2].data.ctm }}</td>
-              </tr>
-              <tr>
-                <td>IITM Management</td>
-                <td>{{ cards[2].data.management }}</td>
-              </tr>
-            </tbody>
             </v-table>
+            <v-card-actions>
+              <v-btn color="primary" block :to="{ name: 'AdminsList' }">View all admins</v-btn>
+            </v-card-actions>
           </v-card>
         </v-col>
       </v-row>      
