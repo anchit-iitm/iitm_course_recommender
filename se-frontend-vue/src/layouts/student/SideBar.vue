@@ -14,7 +14,7 @@
     <v-divider></v-divider>
 
     <v-list density="compact" nav>
-      <v-list-item prepend-icon="mdi-home" title="Dashboard" value="dashboard"
+      <v-list-item prepend-icon="mdi-home" title="Recommendations" value="dashboard"
         :to="{ name: 'StudentHome' }"></v-list-item>
         <v-list-item prepend-icon="mdi-human" title="My Profile" value="profile"
         :to="{name:'StudentProfile'}"></v-list-item>
@@ -45,13 +45,9 @@ export default {
       showDropdown: false,
       drawer: true,
       rail: false,
-      user: "",
-      email: "",
+      user: sessionStorage.getItem('name'),
+      email: sessionStorage.getItem('email'),
     };
-  },
-
-  mounted() {
-    this.initialize();
   },
 
   computed: {
@@ -61,11 +57,6 @@ export default {
   },
 
   methods: {
-    initialize: async function () {
-      this.user = sessionStorage.getItem('name')
-      this.email = sessionStorage.getItem('email')
-    },
-
     showCoursesDropdown() {
       this.showDropdown = !this.showDropdown;
     },

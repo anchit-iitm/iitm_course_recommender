@@ -15,16 +15,31 @@ const requireLogin = (to, from) => {
 const routes = (app) => [
   {
     path: '/',
-    component: () => import('@/layouts/default/Default.vue'),
+    component: () => import('@/layouts/student/Default.vue'),
     children: [
       {
         path: '/register',
         name: 'Register',
         meta:{sidebar:false},
         component: () => import('@/views/RegisterPage.vue'),
+        beforeEnter: (to, from) => {
+          const isAuthenticated = (sessionStorage.getItem("token") === null) ? false : true;
+          if (isAuthenticated){
+            let role = sessionStorage.getItem("role")
+            if(role == "admin"){
+              return {name:"AdminDashboard"}
+            } else if(role == "student"){
+              return {name:"StudentHome"}
+            } else if(role == "ctm"){
+              return {name:"CourseTeamDashboard"}
+            } else if(role == "im"){
+              return {name:"ManagementDashboard"}
+            }
+          }
+        },
       },
       {
-        path: '',
+        path: '/login',
         name: 'Login',
         meta:{sidebar:false},
         component: () => import('@/views/LoginPage.vue'),
@@ -38,6 +53,8 @@ const routes = (app) => [
               return {name:"StudentHome"}
             } else if(role == "ctm"){
               return {name:"CourseTeamDashboard"}
+            } else if(role == "im"){
+              return {name:"ManagementDashboard"}
             }
           }
         },
@@ -45,13 +62,13 @@ const routes = (app) => [
       {
         path: '/student/home',
         name: 'StudentHome',
-        component: () => import('@/views/student/HomePage.vue'),
+        component: () => import('@/views/student/Home.vue'),
         beforeEnter: [requireLogin],
       },
       {
         path: '/courses/:id',
         name: 'CourseView',
-        component: () => import('@/views/student/CoursePage.vue'),
+        component: () => import('@/views/student/SingleCourse.vue'),
         beforeEnter: [requireLogin],
       },
       {
@@ -69,7 +86,7 @@ const routes = (app) => [
       {
         name: 'StudentProfile',
         path: '/student/profile',
-        component: () => import('@/views/ProfilePage.vue'),
+        component: () => import('@/views/student/Profile.vue'),
         beforeEnter: [requireLogin],
       }
     ],    
@@ -97,87 +114,85 @@ const routes = (app) => [
         {
             name: 'AdminDashboard',
             path: '/admin/dashboard',
-            component: () => import('@/views/AdminDashboard.vue'),
+            component: () => import('@/views/admin/Dashboard.vue'),
             beforeEnter: [requireLogin],
         },
 
         {
           name: 'AdminsList',
           path: '/admin/all',
-          component: () => import('@/views/AdminAllView.vue'),
+          component: () => import('@/views/admin/ListOfAdmins.vue'),
           beforeEnter: [requireLogin],
         },
 
         {
           name: 'AdminsCourseList',
           path: '/admin/courses/all',
-          component: () => import('@/views/AdminCourses.vue'),
+          component: () => import('@/views/admin/Courses.vue'),
           beforeEnter: [requireLogin],
         },
 
     ]
 },
 {
-  path: '/courseTeam',
-  redirect: '/courseTeam/dashboard',    
+  path: '/ctm',
+  redirect: '/ctm/dashboard',    
   component: () => import('@/layouts/course_team/Layout.vue'),
-  beforeEnter: (to, from, next) => {
+  beforeEnter: (to, from) => {
     let role = (sessionStorage.getItem("role") == 'ctm')
     if (!role){
       console.log("You are not ctm")
-      next({ name: 'Login' })
+      return { name: 'Login' }
     }
-    else
-      next()
   },
   children: [
       {
         name: 'CourseTeamDashboard',
-        path: '/courseTeam/dashboard',
-        component: () => import('@/views/CourseTeamDashboard.vue'),
+        path: '/ctm/dashboard',
+        component: () => import('@/views/ctm/Dashboard.vue'),
+        beforeEnter: [requireLogin],
       },
       {
-        path: '/course/:courseId/feedback',
         name: 'CourseFeedback',
-        component: () => import('@/views/CourseFeedback.vue'),
-      },
-  ]
-},
-{
-  path:'/student/profile',
-  component:() => import('@/layouts/default/Default.vue'),
-  children: [
-    {
-      name: 'StudentProfile',
-      path: '/student/profile',
-      component: () => import('@/views/ProfilePage.vue'),
-    }
+        path:'/ctm/course/:courseId/feedback',
+        component: () => import('@/views/ctm/Feedback.vue'),
+        beforeEnter: [requireLogin],
+      }
   ]
 },
 
 {
-  path:'/management',
-  redirect: '/management/dashboard',
-  
+  path:'/im',
+  redirect: '/im/dashboard',
+  beforeEnter: (to, from) => {
+    let role = (sessionStorage.getItem("role") == 'im')
+    if (!role){
+      console.log("You are not im")
+      return { name: 'Login' }
+    }
+  },
   component:() => import('@/layouts/management/Layout.vue'),
   children: [
     {
       name: 'ManagementDashboard',
-      path: '/management/dashboard',
-      component: () => import('@/views/management/ManagementDashboard'),
+      path: '/im/dashboard',
+      component: () => import('@/views/management/Dashboard'),
+      beforeEnter: [requireLogin],
     },
     {
       name: 'ManagementCourseList',
-      path: '/management/courseList',
+      path: '/im/courses/all',
       component: () => import('@/views/management/CourseList'),
+      beforeEnter: [requireLogin],
+    },
+    {
+      name: 'IMCourseFeedback',
+      path:'/im/course/:courseId/feedback',
+      component: () => import('@/views/ctm/Feedback.vue'),
+      beforeEnter: [requireLogin],
     }
   ]
 },
-{
-  name: 'CourseFeedback',
-  path:'/feedback/:courseId',
-  component: () => import('@/views/Feedback.vue')
-}
 
 ]
 

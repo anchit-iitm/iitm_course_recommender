@@ -9,11 +9,12 @@
                         <v-card>
                             <v-card-title>About the course</v-card-title>
                             <v-card-text>
-                                <v-list>
+                                <v-list>                                    
                                     <v-list-item>
-                                        <v-list-item-title>Level: {{ course.level }}</v-list-item-title>
+                                        <v-list-item-title>Level: {{ course.level[0].toUpperCase() + course.level.slice(1) }}</v-list-item-title>
+                                        <v-list-item-subtitle>{{ course.dp_or_ds == "dp" ? "Programming Course" : "Data Science Course" }}</v-list-item-subtitle>
                                     </v-list-item>
-                                    <v-list-item class="text-justify">{{ course.description }}</v-list-item>
+                                    <v-list-item class="text-justify mt-2">{{ course.description }}</v-list-item>                                    
                                 </v-list>
 
                             </v-card-text>
@@ -54,7 +55,7 @@
                 <v-row>
                     <v-col cols="12" md="12">
                         <v-card flat>
-                            <v-card-title>Feedbacks</v-card-title>
+                            <v-card-title>Feedbacks ({{ feedbacks.length }})</v-card-title>
                             <v-card-text>
                                 <v-dialog v-model="dialog" max-width="500px">
                                     <template v-slot:activator="{ props }">
@@ -108,12 +109,12 @@
                                 </v-dialog>
                                 <v-card v-for="feedback in feedbacks" :key="feedback.id" class="mt-4">
                                     <V-row>
-                                        <v-col cols="12" md="8">
+                                        <v-col cols="12" md="10">
                                             <v-list density="compact">
                                                 <v-list-item prepend-avatar="@/assets/user.png" :title="feedback.poster"
                                                     :subtitle="feedback.time"></v-list-item>
                                                 <v-divider width="40%" class="ml-5 mt-1"></v-divider>
-                                                <v-list-item>{{ feedback.description }}</v-list-item>
+                                                <v-list-item class="text-justify">{{ feedback.description }}</v-list-item>
                                             </v-list>
                                             <v-card-actions>
                                                 <v-btn flat>
@@ -126,7 +127,7 @@
                                                 </v-btn>
                                             </v-card-actions>
                                         </v-col>
-                                        <v-col cols="12" md="4" class="d-flex align-center justify-center">
+                                        <v-col cols="12" md="2" class="d-flex align-center justify-center">
                                             <v-progress-circular :rotate="360" :size="100" :width="15"
                                                 :model-value="feedback.rating * 10"
                                                 :color="feedback.rating >= 7 ? 'red' : feedback.rating > 3 ? 'warning' : 'green'">
@@ -152,7 +153,7 @@ export default {
     data() {
         return {
             id: "",
-            course: "",
+            course: {level:"Hehe"},
             dialog: false,
             submittedFeedback: -1,
             editedFeedback: {

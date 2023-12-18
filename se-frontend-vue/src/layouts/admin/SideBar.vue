@@ -1,11 +1,11 @@
 <template>
   <v-navigation-drawer color="primary" v-model="drawer" :rail="rail" permanent @click="rail = false">
 
-    <v-list-item prepend-avatar="https://randomuser.me/api/portraits/men/85.jpg" :title="user" :subtitle="email" nav>
-      <template v-slot:append>
-        <v-btn variant="text" icon="mdi-chevron-left" @click.stop="rail = !rail"></v-btn>
-      </template>
+    <v-list-item height="60">
+      <v-list-item-title class="text-h5 text-center">Course Compass</v-list-item-title>
+      <v-list-item-subtitle class="text-center">Admin Panel</v-list-item-subtitle>
     </v-list-item>
+    <v-divider></v-divider>
 
 
     <v-divider></v-divider>
@@ -18,7 +18,11 @@
       <v-list-item prepend-icon="mdi-account-outline" title="All Administrators" value="admins"
         :to="{ name: 'AdminsList' }"></v-list-item>
     </v-list>
+    
     <template v-slot:append>
+      <v-list-item height="70" prepend-avatar="@/assets/user.png" :title="user"
+        :subtitle="email" nav>        
+      </v-list-item>
       <div class="pa-2">
         <v-btn block :to="{ name: 'Logout' }">
           Logout

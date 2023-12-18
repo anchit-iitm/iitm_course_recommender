@@ -19,7 +19,7 @@
           </template>
   
           <template v-slot:item.actions="{ item }">
-            <v-btn color="primary" :to="{ name: 'CourseFeedback', params: { courseId: item.id }}">  
+            <v-btn color="primary" :to="{ name: 'IMCourseFeedback', params: { courseId: item.id }}">  
               View Feedback
             </v-btn>
           </template>

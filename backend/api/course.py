@@ -130,7 +130,7 @@ class CoursesResource(Resource):
                     'id': course.code,
                     'name': course.name,
                     'description': course.description,
-                    'difficulty_rating': course.difficulty_rating,
+                    'difficulty_rating': round(course.difficulty_rating, 3),
                     'level': course.level,
                     'credits': course.credits,
                     'dp_or_ds': course.dp_or_ds,

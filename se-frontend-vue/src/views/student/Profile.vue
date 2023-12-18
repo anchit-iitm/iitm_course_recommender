@@ -43,7 +43,7 @@
                 </v-col>
                 <v-col cols="12" md="1">
                   <v-icon icon="mdi-delete" @click="remove(k)"
-                    v-show="k || (!k && completed_courses.length > 1)"></v-icon>
+                    v-show="k || (!k && completed_courses.length > 0)"></v-icon>
                 </v-col>
               </v-row>
               <v-icon icon="mdi-plus" @click="add(k)" v-show="k == completed_courses.length - 1"></v-icon>

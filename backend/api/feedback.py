@@ -27,7 +27,7 @@ class CourseFeedbackResource(Resource):
                     'id': feedback.id,
                     'poster': User.get_user_by_jwt(feedback.user).email,
                     # 'pic': feedback.user.pic,
-                    'rating': feedback.rating,
+                    'rating': round(feedback.rating, 1),
                     'description': feedback.description,
                     'likes': feedback.likes,
                     'dislikes': feedback.dislikes,

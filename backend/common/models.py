@@ -1,5 +1,5 @@
 from .database import db
-from sqlalchemy import func
+from sqlalchemy import func, desc
 from werkzeug.security import generate_password_hash, check_password_hash
 
 roles_users = db.Table('user_roles',
@@ -181,11 +181,12 @@ class Courses(db.Model):
                 'id': course.code,
                 'name': course.name,
                 'description': course.description,
-                'difficulty_rating': course.difficulty_rating,
+                'difficulty_rating': round(course.difficulty_rating, 3),
                 'level': course.level,
+                'dp_or_ds': course.dp_or_ds,
+                'credits': course.credits,
                 'pre_req': [prerequisite.code for prerequisite in course.pre_reqs],
-                'co_req': [corequisite.code for corequisite in course.co_reqs],
-                # 'availability': [availability for availability in course.availability],
+                'co_req': [corequisite.code for corequisite in course.co_reqs],                
                 'instructors': [
                     {'name': instructor.name, 'email': instructor.email}
                     for instructor in course.instructors
@@ -239,7 +240,7 @@ class Feedback(db.Model):
     
     @classmethod
     def get_all_feedback(cls):
-        return cls.query.all()
+        return cls.query.order_by(desc(cls.time)).all()
 
     @classmethod
     def get_feedback_by_id(cls, id):
@@ -247,7 +248,7 @@ class Feedback(db.Model):
     
     @classmethod
     def get_feedback_by_course(cls, course):
-        return cls.query.filter_by(course=course).all()
+        return cls.query.filter_by(course=course).order_by(desc(cls.time)).all()
     
     @classmethod
     def get_difficulty_average(cls, course):
