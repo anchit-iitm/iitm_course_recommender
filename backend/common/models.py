@@ -223,13 +223,19 @@ class Feedback(db.Model):
     likes = db.Column(db.Integer, default=0)
     dislikes = db.Column(db.Integer, default=0)
 
-    def save(self):
+    def save(self):        
         db.session.add(self)
         db.session.commit()
+        theCourse = Courses.get_course_by_code(self.course)
+        theCourse.difficulty_rating = Feedback.get_difficulty_average(theCourse.code)
+        theCourse.save()
     
     def delete(self):
+        theCourse = Courses.get_course_by_code(self.course)        
         db.session.delete(self)
         db.session.commit()
+        theCourse.difficulty_rating = Feedback.get_difficulty_average(theCourse.code)
+        theCourse.save()
     
     @classmethod
     def get_all_feedback(cls):
@@ -242,3 +248,13 @@ class Feedback(db.Model):
     @classmethod
     def get_feedback_by_course(cls, course):
         return cls.query.filter_by(course=course).all()
+    
+    @classmethod
+    def get_difficulty_average(cls, course):
+        total = 0
+        count = 0
+        for i in cls.query.filter_by(course=course).all():
+            total += i.rating
+            count += 1
+        
+        return total/count if count != 0 else 0
