@@ -25,7 +25,7 @@
       ></v-list-item>
 
       <!-- Conditionally render the course list based on showDropdown -->
-      <v-list-item v-if="showDropdown" v-for="course in courseList" :key="course.id" :to="{ name: 'CourseFeedback', params: { courseId: course.code } }">
+      <v-list-item v-if="showDropdown" v-for="course in courses" :key="course.id" :to="{ name: 'CourseFeedback', params: { courseId: course.id } }">
         <v-list-item-title>{{ course.name }}</v-list-item-title>
       </v-list-item>
       <!-- <v-list v-if="showDropdown">
@@ -58,8 +58,9 @@ export default {
       showDropdown: false,
       user: sessionStorage.getItem('name'),
       email: sessionStorage.getItem('email'),
+courses: [],
       courseList: [{
-          code: 'CS101',
+          id: 'CS101',
           name: 'Introduction to Computer Science',
           description: 'An introductory course covering fundamental concepts in computer science.',
           difficulty_rating: 4.5,
@@ -68,7 +69,7 @@ export default {
           credits: 3,
         },
         {
-          code: 'MATH201',
+          id: 'MATH201',
           name: 'Calculus II',
           description: 'A continuation of Calculus I, focusing on advanced calculus topics.',
           difficulty_rating: 5.0,
@@ -85,29 +86,32 @@ export default {
 
   methods: {
     initialize: async function () {
-      try {
-        let token = sessionStorage.getItem('token');
-        const response = await fetch('/api/v1/courses/all', {
+      let token = sessionStorage.getItem("token")
+            await fetch('/api/v1/courses/all', {
           method: 'GET',
           headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error(`Error ${response.status}: ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        // Filter the courses based on the user's token
-        // this.courseList = data.filter((course) => {
-        //   const instructors = course.instructors.map((ins) => ins.email);
-        //   return instructors.includes(sessionStorage.getItem('email'));
-        // });
-      } catch (error) {
-          console.log(error);
-      }
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+                },
+                
+            })
+            .then(response => response.json().then(jdata=> ({response: response, data: jdata})))
+            .then(({response, data}) => {
+                if(!response.ok){
+                    throw new Error(`Error ${response.status}: ${data.msg}`)
+                }
+                this.courses = data
+                console.log('Fetched Data:', this.cards);
+                
+                let courses_list = data.filter((item) => {                    
+                    let instructors = item.instructors.filter((ins) => ins.email)
+                    return instructors.includes(sessionStorage.getItem("token"))
+                  })
+                
+            })
+            .catch(error => {
+          console.log(error)
+            })
     },
 
     showCoursesDropdown() {

@@ -2,17 +2,17 @@
   <div>
     <div>
     <h1>Course Feedback</h1>
-        <h3>Code: {{ courseData.code }}</h3>
-        <h4>Name: {{ courseData.name }}</h4>
-        <p>Description: {{ courseData.description }}</p>
+        <h3>Code: {{ courseD.id }}</h3>
+        <h4>Name: {{ courseD.name }}</h4>
+        <p>Description: {{ courseD.description }}</p>
     </div>
-    <div v-if="feedbacks.length === 0">No feedback available.</div>
+    <div v-if="feedbacksD.length === 0">No feedback available.</div>
     <div v-else>
-      <div v-for="feedback in feedbacks" :key="feedback.id" class="feedback-card">
+      <div v-for="feedback in feedbacksD" :key="feedback.id" class="feedback-card">
         <p>Description: {{ feedback.description }}</p>
         <p>Rating: {{ feedback.rating }}</p>
         <div class="feedback-meta">
-          <p>Time: {{ feedback.time }}</p>
+          <!-- <p>Time: {{ feedback.time }}</p> -->
           <p>Likes: {{ feedback.likes }}</p>
           <p>Dislikes: {{ feedback.dislikes }}</p>
         </div>
@@ -25,8 +25,9 @@
 export default {
   data() {
     return {
+courseD: {},
       courseData: {
-          "code": "CS101",
+          "id": "CS101",
           "name": "Introduction to Computer Science",
           "description": "An introductory course covering fundamental concepts in computer science.",
           "difficulty_rating": 3.5,
@@ -34,6 +35,7 @@ export default {
           "dp_or_ds": "both",
           "credits": 3
   },
+feedbacksD: [],
       feedbacks: [{
           "id": 1,
           "user": {"email": "user1@example.com"},
@@ -44,9 +46,9 @@ export default {
           "dislikes": 2
   },
   {
-    "id": 2,
+    "id": 2, //
     "user": {"email": "user2@example.com"},
-    "rating": 3.8,
+    "rating": 3.8,//
     "description": "The content was interesting, but the assignments were challenging.",
     "time": "2023-01-16T10:45:00.000Z",
     "likes": 5,
@@ -91,11 +93,12 @@ export default {
         const courseData = await courseResponse.json();
 
         
-        this.feedbacks = feedbackData
-        this.courseData = courseData
+        this.feedbacksD = feedbackData
+        this.courseD = courseData
       } catch (error) {
         console.error('Error fetching data:', error);
       }
+// location.reload();
     },
   },
 };
