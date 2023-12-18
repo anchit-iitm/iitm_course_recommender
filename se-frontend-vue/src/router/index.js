@@ -123,16 +123,50 @@ const routes = (app) => [
         name: 'CourseTeamDashboard',
         path: '/courseTeam/dashboard',
         component: () => import('@/views/CourseTeamDashboard.vue'),
-        beforeEnter: [requireLogin],
       },
       {
         path: '/course/:courseId/feedback',
         name: 'CourseFeedback',
         component: () => import('@/views/CourseFeedback.vue'),
-        beforeEnter: [requireLogin],
       },
   ]
 },
+{
+  path:'/student/profile',
+  component:() => import('@/layouts/default/Default.vue'),
+  children: [
+    {
+      name: 'StudentProfile',
+      path: '/student/profile',
+      component: () => import('@/views/ProfilePage.vue'),
+    }
+  ]
+},
+
+{
+  path:'/management',
+  redirect: '/management/dashboard',
+  
+  component:() => import('@/layouts/management/Layout.vue'),
+  children: [
+    {
+      name: 'ManagementDashboard',
+      path: '/management/dashboard',
+      component: () => import('@/views/management/ManagementDashboard'),
+    },
+    {
+      name: 'ManagementCourseList',
+      path: '/management/courseList',
+      component: () => import('@/views/management/CourseList'),
+    }
+  ]
+},
+{
+  name: 'CourseFeedback',
+  path:'/feedback/:courseId',
+  component: () => import('@/views/Feedback.vue')
+}
+
 ]
 
 const router = (app) => createRouter({
