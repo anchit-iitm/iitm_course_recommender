@@ -18,6 +18,12 @@ const routes = (app) => [
     component: () => import('@/layouts/default/Default.vue'),
     children: [
       {
+        path: '/register',
+        name: 'Register',
+        meta:{sidebar:false},
+        component: () => import('@/views/RegisterPage.vue'),
+      },
+      {
         path: '',
         name: 'Login',
         meta:{sidebar:false},
