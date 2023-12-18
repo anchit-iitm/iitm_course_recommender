@@ -1,47 +1,78 @@
 // Composables
 import { createRouter, createWebHistory } from 'vue-router'
 
-const routes = [
+
+const requireLogin = (to, from) => {
+  const isAuthenticated = (sessionStorage.getItem("token") === null) ? false : true;
+  if (!isAuthenticated) {
+    if (to.name !== 'Login' && to.name !== 'Register'){ 
+      return { name: 'Login' }
+    }
+  }
+}
+
+
+const routes = (app) => [
   {
     path: '/',
     component: () => import('@/layouts/default/Default.vue'),
     children: [
       {
         path: '',
-        name: 'Login',        
+        name: 'Login',
+        meta:{sidebar:false},
         component: () => import('@/views/LoginPage.vue'),
+        beforeEnter: (to, from) => {
+          const isAuthenticated = (sessionStorage.getItem("token") === null) ? false : true;
+          if (isAuthenticated){
+            let role = sessionStorage.getItem("role")
+            if(role == "admin"){
+              return {name:"AdminDashboard"}
+            } else if(role == "student"){
+              return {name:"StudentHome"}
+            } else if(role == "ctm"){
+              return {name:"CourseTeamDashboard"}
+            }
+          }
+        },
       },
       {
         path: '/student/home',
         name: 'StudentHome',
         component: () => import('@/views/student/HomePage.vue'),
+        beforeEnter: [requireLogin],
       },
       {
-        path: '/course/:id',
+        path: '/courses/:id',
         name: 'CourseView',
         component: () => import('@/views/student/CoursePage.vue'),
+        beforeEnter: [requireLogin],
+      },
+      {
+        path: '/courses/completed',
+        name: 'CompletedCourses',
+        component: () => import('@/views/student/CompletedCourses.vue'),
+        beforeEnter: [requireLogin],
       },
     ],    
   },
   {
     path: '/logout',
     name: 'Logout',    
-    beforeEnter: (to, from, next) => {
-      sessionStorage.clear()
-      next({name: "Login"})
+    beforeEnter: (to, from) => {
+      sessionStorage.clear()      
+      return {name: "Login"}
     },  
   },
   {
     path: '/admin',
     redirect: '/admin/dashboard',
-    beforeEnter: (to, from, next) => {
+    beforeEnter: (to, from) => {
       let role = (sessionStorage.getItem("role") == 'admin')
       if (!role){
         console.log("You are not admin")
-        next({ name: 'Login' })
+        return { name: 'Login' }
       }
-      else
-        next()
     },
     component: () => import('@/layouts/admin/Layout.vue'),
     children: [
@@ -49,18 +80,21 @@ const routes = [
             name: 'AdminDashboard',
             path: '/admin/dashboard',
             component: () => import('@/views/AdminDashboard.vue'),
+            beforeEnter: [requireLogin],
         },
 
         {
           name: 'AdminsList',
           path: '/admin/all',
           component: () => import('@/views/AdminAllView.vue'),
+          beforeEnter: [requireLogin],
         },
 
         {
           name: 'AdminsCourseList',
           path: '/admin/courses/all',
           component: () => import('@/views/AdminCourses.vue'),
+          beforeEnter: [requireLogin],
         },
 
     ]
@@ -83,7 +117,12 @@ const routes = [
         name: 'CourseTeamDashboard',
         path: '/courseTeam/dashboard',
         component: () => import('@/views/CourseTeamDashboard.vue'),
-      }
+      },
+      {
+        path: '/course/:courseId/feedback',
+        name: 'CourseFeedback',
+        component: () => import('@/views/CourseFeedback.vue'),
+      },
   ]
 },
 {
@@ -124,19 +163,8 @@ const routes = [
 
 ]
 
-const router = createRouter({
+const router = (app) => createRouter({
   history: createWebHistory(process.env.BASE_URL),
-  routes,
+  routes: routes(app),  
 })
-
-/* router.beforeEach((to, from, next) => {
-  const isAuthenticated = (sessionStorage.getItem("token") === null) ? false : true;
-  if (!isAuthenticated) {
-    if (to.name !== 'Login' && to.name !== 'Register'){ 
-      next({ name: 'Login' })
-    } else next()
-  }
-  else next()
-}) */
-
 export default router

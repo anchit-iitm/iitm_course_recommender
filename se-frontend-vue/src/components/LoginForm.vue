@@ -1,19 +1,16 @@
-<template>
-  <v-snackbar :color="snackbar.color" v-model="snackbar.show">
-        {{ snackbar.message }}
-    </v-snackbar>
-<div class="d-flex align-center justify-center" style="height: 100vh">
+<template>  
+<div class="d-flex align-center justify-center" style="height: 90vh">
         <v-sheet width="400" class="mx-auto">
             <v-card class="elevation-12">
                 <v-toolbar dark color="primary">
                   <v-toolbar-title>Login form</v-toolbar-title>
                 </v-toolbar>
                 <v-card-text>
-                  <v-alert
+                  <!-- <v-alert
                   v-if="showAlert"
                   :color="varient"                                                
                   :text="message"
-                  ></v-alert>
+                  ></v-alert> -->
                 <v-form fast-fail @submit.prevent="login">
                       <v-text-field
                         v-model="username"
@@ -47,22 +44,17 @@
   export default {
     name: "LoginForm",
     data() {
-      return {
-        snackbar: {
-          show: false,
-          message: null,
-          color: null
-        },
+      return {        
         username: "abc@xyz.com",
         password: "abcd",
-        showAlert: false,
-        varient: "success",
-        message: "Hi"
+        // showAlert: false,
+        // varient: "success",
+        // message: "Hi"
       };
     },
     methods: {
-        login: function() {
-            fetch('/api/v1/user/auth', {
+        login: async function() {
+            await fetch('/api/v1/user/auth', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({"email": this.username, "password": this.password})
@@ -77,11 +69,8 @@
                     sessionStorage.setItem("role", data.profile.role)
                     sessionStorage.setItem("token", data.auth.authToken)
 
-                    this.snackbar = {
-                        message: 'Login Successful, redirecting',
-                        color: 'success',
-                        show: true
-                    }
+                    this.$root.vtoast.show({message: 'Login Successful!'})
+
                     if(data.profile.role == "admin"){
                       this.$router.push({name:"AdminDashboard"})
                     } else if(data.profile.role == "student"){
@@ -92,9 +81,7 @@
                 }
             })
             .catch(error => {
-                this.message = error.message
-                this.showAlert = true
-                this.varient = "error"
+                this.$root.vtoast.show({message: error.message, color: 'error'})
             })
         },
     },
