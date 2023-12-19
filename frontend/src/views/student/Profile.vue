@@ -80,7 +80,9 @@ export default {
 
   methods: {
     save: async function () {
-      this.completed_courses = (this.completed_courses[0].id == "")? [] : this.completed_courses
+      if (this.completed_courses.length > 0){
+        this.completed_courses = (this.completed_courses[0].id == "")? [] : this.completed_courses
+      }
       let token = sessionStorage.getItem("token")
       await fetch('/api/v1/profile', {
         method: 'PATCH',
