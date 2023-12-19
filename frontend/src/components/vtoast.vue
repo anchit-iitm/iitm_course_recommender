@@ -5,6 +5,7 @@
         v-model="showSnackbar"
         bottom
         right
+        vertical
     >
       <v-icon left>{{icon}}</v-icon> {{message}}
     </v-snackbar>

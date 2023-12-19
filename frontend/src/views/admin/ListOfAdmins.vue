@@ -214,9 +214,8 @@ export default {
       this.dialogDelete = true
     },
 
-    deleteItemConfirm: async function () {
-      this.closeDelete()
-      let token = sessionStorage.getItem("token")
+    deleteItemConfirm: async function () {      
+      let token = sessionStorage.getItem("token")      
       await fetch('/api/v1/admin', {
         method: 'DELETE',
         headers: {
@@ -230,18 +229,16 @@ export default {
         .then(response => response.json().then(jdata => ({ response: response, data: jdata })))
         .then(({ response, data }) => {
           if (!response.ok) {
-            throw new Error(`Error ${response.status}: ${data.msg}`)
-          }
+            throw new Error(`Error ${response.status}: ${data.message}`)
+          }          
           this.admins.splice(this.editedIndex, 1)
+          this.$root.vtoast.show({ message: "Admin Deleted", color: "warning" })
+          
         })
         .catch(error => {
-          if (error.message.includes("Token has expired")) {
-            // toastr.error("Re-login required, token has expired", 'Error')
-            // this.$router.push("/relogin")
-          }
-          // toastr.error(error.message, 'Error')
-          console.log(error)
+          this.$root.vtoast.show({ message: error.message, color: "error" })
         })
+        this.closeDelete()
     },
 
     close() {
@@ -277,24 +274,20 @@ export default {
         .then(response => response.json().then(jdata => ({ response: response, data: jdata })))
         .then(({ response, data }) => {
           if (!response.ok) {
-            if (data.error != null) {
-              this.errors.push(data.error)
-              throw new Error(`Error ${response.status}: ${data.error}`)
-            } else {
-              this.errors.push(data.msg)
-              throw new Error(`Error ${response.status}: ${data.msg}`)
-            }
+              throw new Error(`Error ${response.status}: ${data.message}`)
           }
           if (this.editedIndex > -1) {
             Object.assign(this.admins[this.editedIndex], this.editedItem)
+            this.$root.vtoast.show({ message: "Admin info updated"})
           } else {
             this.all_emails.splice(this.all_emails.findIndex(a => a.id === this.editedItem.id.id), 1)
             this.editedItem.id.role = this.editedItem.role
             this.admins.push(this.editedItem.id)
+            this.$root.vtoast.show({ message: "Admin Added", color: "success" })
           }
         })
         .catch(error => {
-          console.log(error)
+          this.$root.vtoast.show({ message: error.message, color: "error" })
         })
 
 

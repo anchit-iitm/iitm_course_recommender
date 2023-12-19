@@ -18,7 +18,7 @@
         :to="{ name: 'StudentHome' }"></v-list-item>
         <v-list-item prepend-icon="mdi-human" title="My Profile" value="profile"
         :to="{name:'StudentProfile'}"></v-list-item>
-      <v-list-item prepend-icon="mdi-book-open-blank-variant" title="Completed Courses" value="courses"
+      <v-list-item prepend-icon="mdi-progress-check" title="Completed Courses" value="courses"
         :to="{ name: 'CompletedCourses' }"></v-list-item>
         <v-list-item prepend-icon="mdi-book-open-blank-variant" title="All Courses" value="allcourses"
         :to="{ name: 'AllCourses' }"></v-list-item>
@@ -45,8 +45,8 @@ export default {
       showDropdown: false,
       drawer: true,
       rail: false,
-      user: sessionStorage.getItem('name'),
-      email: sessionStorage.getItem('email'),
+      user: "Dummy User",
+      email: "dummy@dummy.com",
     };
   },
 
@@ -54,6 +54,11 @@ export default {
     shouldShowSidebar() {
       return this.$route.meta.sidebar !== false;
     }
+  },
+
+  mounted: function() {
+    this.user = sessionStorage.getItem('name')
+    this.email = sessionStorage.getItem('email')
   },
 
   methods: {

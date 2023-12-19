@@ -79,7 +79,14 @@
                     if(!response.ok){
                         throw new Error(`${data.message}`)
                     } else {
-                        this.$router.push({name:"Login"})
+                        sessionStorage.setItem("name", this.name)
+                        sessionStorage.setItem("email", this.email)
+                        sessionStorage.setItem("role", "student")
+                        sessionStorage.setItem("token", data.authToken)
+                        this.$root.vtoast.show({message: "Registration Successful!"})
+                        this.$router.push({name:"StudentProfile"})
+
+                        this.$root.vtoast.show({message: "Please Complete Your Profile!", color:"warning"})
                     }
                 })
                 .catch(error => {

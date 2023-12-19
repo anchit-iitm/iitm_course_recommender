@@ -1,32 +1,27 @@
 <template> 
     <v-navigation-drawer color="primary">
-      <v-list>
-        <v-list-item
-          prepend-avatar="https://randomuser.me/api/portraits/women/85.jpg"
-          :title="user"
-          :subtitle="email"
-        ></v-list-item>
-      </v-list>
-
-      <v-divider></v-divider>
+      <v-list-item height="60">
+      <v-list-item-title class="text-h5 text-center">Course Compass</v-list-item-title>
+      <v-list-item-subtitle class="text-center">Management Panel</v-list-item-subtitle>
+    </v-list-item>
+    <v-divider></v-divider>
 
       <v-list nav>
         <v-list-item prepend-icon="mdi-home" title="Dashboard" value="dashboard" :to="{name: 'ManagementDashboard'}"></v-list-item>
         <v-list-item prepend-icon="mdi-home" title="Course List" value="Course List" :to="{name: 'ManagementCourseList'}"></v-list-item>
     </v-list>
+
+    <template v-slot:append>
+      <v-list-item height="70" prepend-avatar="@/assets/user.png" :title="user"
+        :subtitle="email" nav>        
+      </v-list-item>
+      <div class="pa-2">
+        <v-btn block :to="{ name: 'Logout' }">
+          Logout
+        </v-btn>
+      </div>
+    </template>
     </v-navigation-drawer>
-
-    <v-toolbar color="secondary">
-    <v-app-bar-nav-icon></v-app-bar-nav-icon>
-
-    <v-toolbar-title>Course Compass</v-toolbar-title>
-
-    <v-spacer></v-spacer>
-
-    <v-btn :to="{name: 'Logout'}" icon>
-      <v-icon>mdi-export</v-icon>
-    </v-btn>
-  </v-toolbar>
 </template>
 
 <script>

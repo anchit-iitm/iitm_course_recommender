@@ -13,6 +13,7 @@ from common.helpers import role_required
 course_schema = {
     'type': 'object',
     'properties': {
+        'code': {'type': 'string'},
         'name': {'type': 'string'},
         'description': {'type': 'string'},
         'level': {
@@ -36,7 +37,7 @@ course_schema = {
             }
         }
     },
-    'required': ['name', 'description', 'level', 'dp_or_ds', 'credits', 'instructors']
+    'required': ['code']
 }
 
 class CourseResource(Resource):
@@ -55,7 +56,7 @@ class CourseResource(Resource):
             return show_500()
 
     # PATCH method for modifying a single course by ID
-    # @role_required('admin')
+    @role_required(['admin', 'ctm'])
     def patch(self, id):
         try:
             # Query the database for the course with the specified ID
@@ -162,12 +163,16 @@ class CoursesResource(Resource):
             # Create a new course object based on the received data
             new_course = Courses(
                 code=data.get('code'),
-                name=data.get('name'),
-                description=data.get('description'),
-                difficulty_rating=data.get('difficulty_rating'),
+                name=data.get('name'),                                
                 level=data.get('level'),
                 # Add other properties as needed
             )
+            new_instructors = data.get('instructors', None)
+            if new_instructors:
+                new_course.instructors = []
+                for i in new_instructors:
+                    ins = User.get_user_by_email(i['email'])
+                    new_course.instructors.append(ins)
 
             # Add the new course to the database
             db.session.add(new_course)

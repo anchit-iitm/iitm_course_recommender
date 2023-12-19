@@ -134,16 +134,7 @@ export default {
       // editedDpOrDs: null,
       // editedCredits: '',
       levelOptions: ['foundation', 'diploma', 'degree'],
-      dpOrDsOptions: ['dp', 'ds'],
-      submittedFeedback: -1,
-      editedFeedback: {
-        description: "",
-        rating: 0
-      },
-      defaultFeedback: {
-        description: "",
-        rating: 0
-      },
+      dpOrDsOptions: ['dp', 'ds'],      
       feedbacks: [],
     }
   },
@@ -156,6 +147,7 @@ export default {
     '$route': {
       handler(newValue, oldValue) {        
         this.id = newValue.params.courseId
+        this.$root.vtoast.show({ message: `Feedbacks for ${this.id} opened`, color: "info" })
         this.getCourseInfo()
       }
       
@@ -163,63 +155,6 @@ export default {
   },
 
 methods: {
-  close() {
-    this.dialog = false
-    this.$nextTick(() => {
-      this.editedFeedback = Object.assign({}, this.defaultFeedback)
-    })
-  },
-  save: async function () {
-    let token = sessionStorage.getItem("token")
-    await fetch(`/api/v1/course/${this.id}/feedback`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(this.editedFeedback)
-
-    })
-      .then(response => response.json().then(jdata => ({ response: response, data: jdata })))
-      .then(({ response, data }) => {
-        if (!response.ok) {
-          throw new Error(`Error ${response.status}: ${data.message}`)
-        }
-        this.getCourseInfo()
-        this.getAllFeedbacks()
-        this.$root.vtoast.show({ message: "Feedback Submitted" })
-      })
-      .catch(error => {
-        console.log(error)
-      })
-    this.close()
-  },
-
-  deleteFeedback: async function () {
-    let token = sessionStorage.getItem("token")
-    await fetch(`/api/v1/feedback/${this.submittedFeedback}`, {
-      method: 'DELETE',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      },
-    })
-      .then(response => response.json().then(jdata => ({ response: response, data: jdata })))
-      .then(({ response, data }) => {
-        if (!response.ok) {
-          throw new Error(`Error ${response.status}: ${data.message}`)
-        }
-        this.$root.vtoast.show({ message: "Feedback Deleted", color: "warning" })
-        this.getCourseInfo()
-        this.getAllFeedbacks()
-        this.submittedFeedback = -1
-      })
-      .catch(error => {
-        console.log(error)
-      })
-    this.close()
-  },
-
   getAllFeedbacks: async function () {
     let token = sessionStorage.getItem("token")
     await fetch(`/api/v1/course/${this.id}/feedback`, {
@@ -236,19 +171,9 @@ methods: {
           throw new Error(`Error ${response.status}: ${data.msg}`)
         }
         this.feedbacks = data
-
-        this.feedbacks.forEach((item) => {
-          if (item.poster == sessionStorage.getItem('email')) {
-            this.defaultFeedback.description = item.description
-            this.defaultFeedback.rating = item.rating
-            this.editedFeedback.description = item.description
-            this.editedFeedback.rating = item.rating
-            this.submittedFeedback = item.id
-          }
-        })
       })
       .catch(error => {
-        console.log(error)
+        this.$root.vtoast.show({ message: error.message, color: "info" })
       })
   },
 
@@ -298,8 +223,7 @@ methods: {
         if (!response.ok) {
           throw new Error(`Error ${response.status}: ${response.statusText}`);
         }
-        this.$root.vtoast.show({message: "Course information updated"})
-        // Close the edit dialog
+        this.$root.vtoast.show({message: "Course information updated"})        
         this.editDialog = false;
       } catch (error) {
         this.$root.vtoast.show({message: error.message, color: 'error'})
@@ -318,84 +242,3 @@ mounted: async function () {
 },
 }
 </script>
-
-  <!-- <script>
-  export default {
-    data() {
-      return {
-        courseData: {
-          "id": "CS101",
-          "name": "Introduction to Computer Science",
-          "description": "An introductory course covering fundamental concepts in computer science.",
-          "difficulty_rating": 3.5,
-          "level": "foundation",
-          "dp_or_ds": "both",
-          "credits": 3
-        },
-        feedbacks: [
-          {
-            "id": 1,
-            "poster": "user1@example.com",
-            "rating": 4.5,
-            "description": "Great course! Enjoyed the material.",
-            "likes": 10,
-            "dislikes": 2
-          },
-          // Add more feedback objects as needed
-        ],
-      };
-    },
-    mounted() {
-      this.initialize();
-    },
-    methods: {
-      async initialize() {
-        try {
-          let token = sessionStorage.getItem('token');
-          const courseId = this.$route.params.courseId;
-  
-          const feedbackResponse = await fetch(`/api/v1/course/${courseId}/feedback`, {
-            method: 'GET',
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
-          });
-  
-          if (!feedbackResponse.ok) {
-            throw new Error(`Error ${feedbackResponse.status}: ${feedbackResponse.statusText}`);
-          }
-  
-          const courseResponse = await fetch(`/api/v1/courses/${courseId}`, {
-            method: 'GET',
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
-          });
-  
-          if (!courseResponse.ok) {
-            throw new Error(`Error ${courseResponse.status}: ${courseResponse.statusText}`);
-          }
-  
-          const feedbackData = await feedbackResponse.json();
-          const courseData = await courseResponse.json();
-  
-          this.feedbacks = feedbackData;
-          this.courseData = courseData;
-        } catch (error) {
-          console.error('Error fetching data:', error);
-        }
-      },
-      getStarIcon() {
-        return 'mdi-star-outline';
-      },
-      getLikeIcon() {
-        return 'mdi-heart-outline';
-      },
-      getDislikeIcon() {
-        return 'mdi-thumb-down-outline';
-      },
-    },
-  };
-  </script> -->

@@ -1,5 +1,5 @@
 // Composables
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 
 
 const requireLogin = (to, from) => {
@@ -39,7 +39,7 @@ const routes = (app) => [
         },
       },
       {
-        path: '/login',
+        path: '',
         name: 'Login',
         meta:{sidebar:false},
         component: () => import('@/views/LoginPage.vue'),
@@ -197,7 +197,7 @@ const routes = (app) => [
 ]
 
 const router = (app) => createRouter({
-  history: createWebHistory(process.env.BASE_URL),
+  history: createWebHashHistory(process.env.BASE_URL),
   routes: routes(app),  
 })
 export default router

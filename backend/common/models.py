@@ -137,8 +137,8 @@ class Courses(db.Model):
     description = db.Column(db.String(500))
     difficulty_rating = db.Column(db.Float, default=5)
     level = db.Column(db.String(10), nullable=False) # foundation, diploma or degree
-    dp_or_ds = db.Column(db.String(2), nullable=False)  # dp, ds or both
-    credits = db.Column(db.Integer, nullable=False)
+    dp_or_ds = db.Column(db.String(2), nullable=False, default="ds")  # dp, ds
+    credits = db.Column(db.Integer, nullable=False, default=4)
     instructors = db.relationship('User', secondary=Courses_Instructors, backref=db.backref('courses'))
     pre_reqs = db.relationship('Courses', secondary = Course_Prereqs, primaryjoin = (Course_Prereqs.c.prereq_code == code), secondaryjoin = (Course_Prereqs.c.course_code == code))    
     co_reqs = db.relationship('Courses', secondary = Course_Coreqs, primaryjoin = (Course_Coreqs.c.coreq_code == code),secondaryjoin = (Course_Coreqs.c.course_code == code))

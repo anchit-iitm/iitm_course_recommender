@@ -14,7 +14,7 @@ from common.helpers import role_required
 
 class GeneralStatistics(Resource):
 
-    @role_required('admin')
+    @role_required(['admin', 'im'])
     def get(self):
 
         try:
