@@ -14,8 +14,7 @@ const requireLogin = (to, from) => {
 
 const routes = (app) => [
   {
-    path: '/',
-    component: () => import('@/layouts/student/Default.vue'),
+    path: '/',    
     children: [
       {
         path: '/register',
@@ -60,6 +59,27 @@ const routes = (app) => [
         },
       },
       {
+        path: '/logout',
+        name: 'Logout',    
+        beforeEnter: (to, from) => {
+          sessionStorage.clear()      
+          return {name: "Login"}
+        },  
+      },
+    ],    
+  },
+  {
+    path: '/student',
+    component: () => import('@/layouts/student/Default.vue'),
+    beforeEnter: (to, from) => {
+      let role = (sessionStorage.getItem("role") == 'student')
+      if (!role){
+        console.log("You are not student")
+        return { name: 'Login' }
+      }
+    },
+    children: [      
+      {
         path: '/student/home',
         name: 'StudentHome',
         component: () => import('@/views/student/Home.vue'),
@@ -90,14 +110,6 @@ const routes = (app) => [
         beforeEnter: [requireLogin],
       }
     ],    
-  },
-  {
-    path: '/logout',
-    name: 'Logout',    
-    beforeEnter: (to, from) => {
-      sessionStorage.clear()      
-      return {name: "Login"}
-    },  
   },
   {
     path: '/admin',
