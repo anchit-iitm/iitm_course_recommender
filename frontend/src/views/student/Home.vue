@@ -165,7 +165,7 @@ export default {
       const cy = cytoscape({
         container: document.getElementById("cy"),
         boxSelectionEnabled: false,
-        autounselectify: true,
+        autounselectify: true,        
         style: cytoscape
           .stylesheet()
           .selector("node")
@@ -211,6 +211,8 @@ export default {
           fit: true,
         },
       });
+
+      cy.userZoomingEnabled(false);
     },
   },
 
