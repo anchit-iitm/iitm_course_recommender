@@ -1,137 +1,138 @@
 <template>
-    <v-container fill-height fluid class="down-top-padding">
-      <v-row>        
-        <v-col cols="3" lg="4">          
-          <v-card elevation="3">
-            <v-card-title class="text-center">{{ cards[0].title }}</v-card-title>
-            <v-divider />
-            <v-table>
-              <tbody>
-                <tr>
-                  <td>Total</td>
-                  <td>{{ cards[0].data.total }}</td>
-                </tr>
-                <tr>
-                  <td>Foundation</td>
-                  <td>{{ cards[0].data.foundation }}</td>
-                </tr>
-                <tr>
-                  <td>Diploma</td>
-                  <td>{{ cards[0].data.diploma }}</td>
-                </tr>
-                <tr>
-                  <td>BSc</td>
-                  <td>{{ cards[0].data.bsc }}</td>
-                </tr>
-                <tr>
-                  <td>BS</td>
-                  <td>{{ cards[0].data.bs }}</td>
-                </tr>
-              </tbody>
-            </v-table>
-          </v-card>
-        </v-col>
+  <v-container fill-height fluid class="down-top-padding">
+    <v-row>
+      <v-col cols="3" lg="4">
+        <v-card elevation="3">
+          <v-card-title>{{ cards[0].title }}</v-card-title>
+          <v-divider />
+          <v-card-text class="d-flex justify-center">
+            <Pie class="text-center text-justify" v-if="cards[0].loaded" :data="cards[0].cdata" :options="cards[0].options" />
+          </v-card-text>
+          <v-list>
+              <v-list-item>                
+                <span class="float-left">Foundation</span>
+                <span class="float-right">{{ this.cards[0].cdata.datasets[0].data[0] }}</span>
+              </v-list-item>
+              <v-list-item>                
+                <span class="float-left">Diploma</span>
+                <span class="float-right">{{ this.cards[0].cdata.datasets[0].data[1] }}</span>
+              </v-list-item>
+              <v-list-item>                
+                <span class="float-left">Degree</span>
+                <span class="float-right">{{ this.cards[0].cdata.datasets[0].data[2] }}</span>
+              </v-list-item>
+            </v-list>
+        </v-card>
+      </v-col>
 
-        <v-col cols="3" lg="4">          
-          <v-card elevation="3">
-            <v-card-title class="text-center">{{ cards[1].title }}</v-card-title>
-            <v-divider />
-            <v-table>
-              <tbody>
-                <tr>
-                  <td>Total</td>
-                  <td>{{ cards[1].data.total }}</td>
-                </tr>
-                <tr>
-                  <td>Foundation</td>
-                  <td>{{ cards[1].data.foundation }}</td>
-                </tr>
-                <tr>
-                  <td>Diploma</td>
-                  <td>{{ cards[1].data.diploma }}</td>
-                </tr>
-                <tr>
-                  <td>Degree</td>
-                  <td>{{ cards[1].data.degree }}</td>
-                </tr>
-              </tbody>
-            </v-table>
-          </v-card>
-        </v-col>
-
-        <v-col cols="3" lg="4">          
-          <v-card elevation="3">
-            <v-card-title class="text-center">{{ cards[2].title }}</v-card-title>
-            <v-divider />
-            <!-- <v-card-text>{{ item.text }}</v-card-text> -->
-            <v-table>
-              <tbody>
-              <tr>
-                <td>Admins</td>
-                <td>{{ cards[2].data.superadmins }}</td>
-              </tr>
-              <tr>
-                <td>Course Team Members</td>
-                <td>{{ cards[2].data.ctm }}</td>
-              </tr>
-              <tr>
-                <td>IITM Management</td>
-                <td>{{ cards[2].data.management }}</td>
-              </tr>
-            </tbody>
-            </v-table>
-          </v-card>
-        </v-col>
-      </v-row>      
-    </v-container>
-  </template>
+      <v-col cols="3" lg="4">
+        <v-card elevation="3">
+          <v-card-title>{{ cards[1].title }}</v-card-title>
+          <v-divider />
+          <v-card-text class="d-flex justify-center">
+            <Pie class="text-center text-justify" v-if="cards[1].loaded" :data="cards[1].cdata" :options="cards[1].options" />
+          </v-card-text>
+          <v-list>
+              <v-list-item>                
+                <span class="float-left">Foundation</span>
+                <span class="float-right">{{ this.cards[1].cdata.datasets[0].data[0] }}</span>
+              </v-list-item>
+              <v-list-item>                
+                <span class="float-left">Diploma</span>
+                <span class="float-right">{{ this.cards[1].cdata.datasets[0].data[1] }}</span>
+              </v-list-item>
+              <v-list-item>                
+                <span class="float-left">Degree</span>
+                <span class="float-right">{{ this.cards[1].cdata.datasets[0].data[2] }}</span>
+              </v-list-item>
+            </v-list>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
+</template>
   
   
-  <script>
-  export default {
-    data(){
-      return {        
-        cards: [
-          {
-            title: "Student Details",
-            data: {}
-          },
-          {
-            title: "Course Details",
-            data: {}
-          },
-          {
-            title: "Non-Student Details",
-            data: {}
-          }
-        ]
-      }
-    },
+<script>
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, Colors } from 'chart.js'
+import { Pie } from 'vue-chartjs'
 
-    mounted: async function () 
-    {
-      let token = sessionStorage.getItem("token")
-      await fetch('/api/v1/stats/general', {
-          method: 'GET',
-          headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
+ChartJS.register(ArcElement, Tooltip, Legend)
+export default {
+  components: {
+    Pie
+  },
+  data() {
+    return {
+      cards: [
+        {
+          title: "Student Details",
+          cdata: {
+            labels: ["Foundation", "Diploma", "Degree"],
+            datasets: [
+              {
+                backgroundColor: this.$chartColors.p3,
+                data: [],
+              }
+            ]
           },
-          
+          options: {
+            responsive: true,
+            maintainAspectRatio: false
+          },
+          loaded: false,
+
+        },
+        {
+          title: "Course Details",
+          cdata: {
+            labels: ["Foundation", "Diploma", "Degree"],
+            datasets: [
+              {
+                backgroundColor: this.$chartColors.p3,
+                data: [],
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false
+          },
+          loaded: false,
+        },
+        {
+          title: "Non-Student Details",
+          data: {}
+        }
+      ]
+    }
+  },
+
+  mounted: async function () {
+    let token = sessionStorage.getItem("token")
+    await fetch('/api/v1/stats/general', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+
+    })
+      .then(response => response.json().then(jdata => ({ response: response, data: jdata })))
+      .then(({ response, data }) => {
+        if (!response.ok) {
+          throw new Error(`Error ${response.status}: ${data.msg}`)
+        }
+        this.cards[0].cdata.datasets[0].data = [data['students'].foundation, data['students'].diploma, data['students'].degree]
+        this.cards[0].loaded = true
+        this.cards[1].cdata.datasets[0].data = [data['courses'].foundation, data['courses'].diploma, data['courses'].degree]
+        this.cards[1].loaded = true        
+        this.cards[2].data = data['admins']
       })
-      .then(response => response.json().then(jdata=> ({response: response, data: jdata})))
-      .then(({response, data}) => {
-          if(!response.ok){
-              throw new Error(`Error ${response.status}: ${data.msg}`)
-          }
-          this.cards[0].data = data['students']
-          this.cards[1].data = data['courses']
-          this.cards[2].data = data['admins']
+      .catch(error => {
+        console.log(error)
       })
-      .catch(error => {                                
-          console.log(error)
-      })
-    },    
-  }
-  
-  </script>
+  },
+}
+
+</script>

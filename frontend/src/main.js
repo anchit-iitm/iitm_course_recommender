@@ -19,11 +19,15 @@ import { createApp } from 'vue'
 const app = createApp(App)
 app.config.globalProperties.$hostname = 'http://localhost:3000'
 app.config.globalProperties.$api = 'http://localhost:5000/api/v1'
-// app.config.errorHandler = (error) => vtoast.show({message: error, color: 'error'})
-app.config.errorHandler = function (err, vm, info) {
-    // handle error
-    // `info` is a Vue-specific error info, e.g. which lifecycle hook
-    // the error was found in. Only available in 2.2.0+    
+app.config.globalProperties.$chartColors = {
+  p3: ['#003f5c', '#bc5090', '#ffa600'],
+  p4: ['#003f5c', '#7a5195', '#ef5675', '#ffa600',],
+  p5: ['#003f5c', '#58508d', '#bc5090', '#ff6361', '#ffa600'],
+  p6: ['#003f5c', '#444e86', '#955196', '#dd5182', '#ff6e54', '#ffa600',],
+}
+
+
+app.config.errorHandler = function (err, vm, info) {   
     console.log(err, vm, info)
   }
 

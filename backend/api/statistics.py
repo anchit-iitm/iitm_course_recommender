@@ -23,8 +23,8 @@ class GeneralStatistics(Resource):
                     "total": User.get_count_of_users_with_role(['student']),
                     "foundation": User.get_count_of_student_in_level(['foundation']),
                     "diploma": User.get_count_of_student_in_level(['diploma']),
-                    "bsc": User.get_count_of_student_in_level(['bsc']),
-                    "bs": User.get_count_of_student_in_level(['bs']),
+                    "degree": User.get_count_of_student_in_level(['degree']),
+                    #"bs": User.get_count_of_student_in_level(['bs']),
                 },
                 "courses": {
                     "total": Courses.get_count_of_courses_in_level(),

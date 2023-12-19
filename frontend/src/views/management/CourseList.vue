@@ -14,9 +14,9 @@
             </v-toolbar>
           </template>
   
-          <template v-slot:item.instructors="{ item }">
+          <!-- <template v-slot:item.instructors="{ item }">
             <p class="mt-2" v-for="x in item.instructors">{{ x.name }}</p>
-          </template>
+          </template> -->
   
           <template v-slot:item.actions="{ item }">
             <v-btn color="primary" :to="{ name: 'IMCourseFeedback', params: { courseId: item.id }}">  
@@ -87,7 +87,7 @@
         },
         { title: 'Name', key: 'name' },
         { title: 'Difficulty Rating', key: 'difficulty_rating' },
-        { title: 'Instructors', key: 'instructors' },
+        //{ title: 'Instructors', key: 'instructors' },
         { title: 'Actions', key: 'actions', sortable: false },
       ],
     }),
