@@ -1,0 +1,2213 @@
+openapi: 3.0.0
+info:
+  title: CourseCompass API - SE Project
+  version: 1.2.1
+  description: "The application caters to IITM BS Degree students, providing personalized course recommendations for upcoming terms by analyzing their historical course data and scores. It serves as a comprehensive information hub for all degree courses, featuring feedback from past students. This feedback empowers current students to make informed decisions. Moreover, the app is designed for use by both students and the IITM management and course support team to enhance the value of courses and improve the overall academic\_experience.\n\nCreated By (Team 22):\n\nAnhat Singh (21f2000381), Anchit Mandal (21f1000692), Jasleen Kaur Cheema (21f1006537), Oza Jay Amit (21f1001944), Rohit Vinit Londhe (21f1006995)"
+  contact:
+    name: Team 22
+servers:
+  - url: 'http://localhost/api/v1'
+    description: localhost
+paths:
+  /user/auth:
+    get:
+      summary: User logout
+      tags:
+        - User Operations
+      responses:
+        '200':
+          description: OK
+          content: {}
+        '401':
+          description: Unauthorized
+      operationId: get-usr-logout
+      x-stoplight:
+        id: zti1xx6vrev2w
+      description: Logs out the current user by deleting auth token.
+      parameters: []
+    parameters: []
+    post:
+      summary: User login
+      operationId: post-user-login
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  auth:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                      authToken:
+                        type: string
+                  profile:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      name:
+                        type: string
+                      email:
+                        type: string
+                x-examples:
+                  Example 1:
+                    auth:
+                      message: Login successful
+                      authToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+                    profile:
+                      id: 123
+                      name: John Doe
+                      email: john@example.com
+              examples:
+                Example 1:
+                  value:
+                    auth:
+                      message: Login successful
+                      authToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+                    profile:
+                      id: 123
+                      name: John Doe
+                      email: john@example.com
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: The username/password is not there
+              examples:
+                Example 1:
+                  value:
+                    message: The username/password is not there
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+      x-stoplight:
+        id: 2jk9os0ku6wul
+      description: Authenticates user and returns auth token on success.
+      requestBody:
+        content: {}
+      tags:
+        - User Operations
+      security: []
+  /user/auth/register:
+    post:
+      summary: Create new user
+      operationId: post-user-register
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  authToken:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: User created successfully
+                    authToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: The required fields are not there
+              examples:
+                Example 1:
+                  value:
+                    message: The required fields are not there
+      x-stoplight:
+        id: ysyhxh2xxsesu
+      description: Creates a new user account with provided details.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+              x-examples:
+                Example 1:
+                  name: John Doe
+                  email: john@example.com
+                  password: password123
+      security: []
+      tags:
+        - User Operations
+  /profile:
+    get:
+      summary: Get user preferences
+      tags:
+        - Profile
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  email:
+                    type: string
+                  pic:
+                    type: string
+                  role:
+                    type: string
+                  bio:
+                    type: object
+                    properties:
+                      maximum_courses_in_a_term:
+                        type: integer
+                      current_degree_level:
+                        type: string
+                      dp_or_ds:
+                        type: string
+                      current_courses:
+                        type: array
+                        items:
+                          type: string
+                      completed_courses:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            marks:
+                              type: number
+                x-examples:
+                  Example 1:
+                    email: string
+                    pic: string
+                    role: string
+                    bio:
+                      maximum_courses_in_a_term: 0
+                      current_degree_level: string
+                      dp_or_ds: string
+                      current_courses:
+                        - string
+                      completed_courses:
+                        - id: BSC2001
+                          marks: 87.9
+              examples:
+                Example 1:
+                  value:
+                    email: string
+                    pic: string
+                    role: string
+                    bio:
+                      maximum_courses_in_a_term: 0
+                      current_degree_level: string
+                      dp_or_ds: string
+                      current_courses:
+                        - string
+                      completed_courses:
+                        - id: string
+                          marks: 0
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+              examples:
+                Example 1:
+                  value:
+                    message: You need to login first
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+              examples:
+                Example 1:
+                  value:
+                    message: inadequete role
+        '404':
+          description: Not Found
+          content: {}
+      operationId: get-profile
+      x-stoplight:
+        id: fae9s8urey3v9
+      description: |-
+        Fetches saved user preferences from profile.
+        This includes:
+        1. Maximum number of subjects to take in next term
+        2. Diploma Data Science/Diploma Programming preference
+        3. Current Study level - Foundation/Diploma/Degree
+        4. Courses taken in current term.
+        5. Courses completed in previous terms with their marks
+    post:
+      summary: Add user preferences
+      operationId: post-profile
+      responses:
+        '201':
+          description: Created
+          content: {}
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+              examples:
+                Example 1:
+                  value:
+                    message: Incorrect data sent
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+              examples:
+                Example 1:
+                  value:
+                    message: You need to login first
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+              examples:
+                Example 1:
+                  value:
+                    message: Inadequate role found
+      x-stoplight:
+        id: 7dp688189vzjw
+      description: |-
+        Allows user to add profile information into the app
+        This includes:
+        1. Maximum number of subjects to take in next term
+        2. Diploma Data Science/Diploma Programming preference
+        3. Current Study level - Foundation/Diploma/Degree
+        4. Courses taken in current term.
+        5. Courses completed in previous terms with their marks.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                maximum_courses_in_a_term:
+                  type: integer
+                current_degree_level:
+                  type: string
+                dp_or_ds:
+                  type: string
+                current_courses:
+                  type: array
+                  items:
+                    type: string
+                completed_courses:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      marks:
+                        type: number
+              x-examples:
+                Example 1:
+                  maximum_courses_in_a_term: 0
+                  current_degree_level: string
+                  dp_or_ds: string
+                  current_courses:
+                    - string
+                  completed_courses:
+                    - id: BSC2001
+                      marks: 87.9
+            examples:
+              Example 1:
+                value:
+                  maximum_courses_in_a_term: 0
+                  current_degree_level: string
+                  dp_or_ds: string
+                  current_courses:
+                    - string
+                  completed_courses:
+                    - id: BSC2001
+                      marks: 87.9
+      tags:
+        - Profile
+    patch:
+      summary: Modify preferences
+      operationId: patch-profile
+      responses:
+        '202':
+          description: Accepted
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+      x-stoplight:
+        id: c1wlo10cy1fen
+      description: |-
+        Update information of the profile of a user
+
+        This includes:
+        1. Maximum number of subjects to take in next term
+        2. Diploma Data Science/Diploma Programming preference
+        3. Current Study level - Foundation/Diploma/Degree
+        4. Courses taken in current term.
+        5. Courses completed in previous terms with their marks.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                maximum_courses_in_a_term:
+                  type: integer
+                current_degree_level:
+                  type: string
+                dp_or_ds:
+                  type: string
+                current_courses:
+                  type: array
+                  items:
+                    type: string
+                completed_courses:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      marks:
+                        type: number
+              x-examples:
+                Example 1:
+                  maximum_courses_in_a_term: 0
+                  current_degree_level: string
+                  dp_or_ds: string
+                  current_courses:
+                    - string
+                  completed_courses:
+                    - id: BSC2001
+                      marks: 87.9
+            examples:
+              Example 1:
+                value:
+                  maximum_courses_in_a_term: 0
+                  current_degree_level: string
+                  dp_or_ds: string
+                  current_courses:
+                    - string
+                  completed_courses:
+                    - id: BSC2001
+                      marks: 87.9
+      tags:
+        - Profile
+  '/course/{id}':
+    get:
+      summary: Get single course info
+      tags:
+        - Courses
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  description:
+                    type: string
+                  difficulty_rating:
+                    type: number
+                  level:
+                    type: string
+                  pre_req:
+                    type: array
+                    items:
+                      type: string
+                  co_req:
+                    type: array
+                    items:
+                      type: string
+                  availability:
+                    type: array
+                    items:
+                      type: string
+                  instructors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                        email:
+                          type: string
+                x-examples:
+                  Example 1:
+                    id: BSC2001
+                    name: Course 1
+                    description: This is course 1
+                    difficulty_rating: 8.92
+                    level: Bsc
+                    pre_req:
+                      - BSC2001
+                      - BSC2002
+                    co_req:
+                      - BSC2001
+                      - BSC2002
+                    availability:
+                      - Sept2022
+                      - March2002
+                    instructors:
+                      - name: ABCD
+                        email: ABCD@efgh.com
+                      - name: EFGH
+                        email: ijkl@efgh.com
+              examples:
+                Example 1:
+                  value:
+                    id: BSC2001
+                    name: Course 1
+                    description: This is course 1
+                    difficulty_rating: 8.92
+                    level: Bsc
+                    pre_req:
+                      - BSC2001
+                      - BSC2002
+                    co_req:
+                      - BSC2001
+                      - BSC2002
+                    availability:
+                      - Sept2022
+                      - March2002
+                    instructors:
+                      - name: ABCD
+                        email: ABCD@efgh.com
+                      - name: EFGH
+                        email: ijkl@efgh.com
+            application/xml:
+              schema:
+                type: object
+                properties: {}
+            multipart/form-data:
+              schema:
+                type: object
+                properties: {}
+              examples:
+                Example 1:
+                  value:
+                    courses:
+                      - id: BSC2001
+                        name: Course 1
+                        description: This is course 1
+                        difficulty_rating: 8.92
+                        pre_req:
+                          - BSC2001
+                          - BSC2002
+                        co_req:
+                          - BSC2001
+                          - BSC2002
+                        availability:
+                          - Sept2022
+                          - March2002
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+      operationId: get-course-id
+      x-stoplight:
+        id: 5zgqiujg9gvvl
+      parameters: []
+      description: |-
+        Returns full details of a course using its ID.
+
+        This includes:
+        1. Course Code
+        2. Course Name
+        3. Course Description
+        4. Course Difficulty Rating
+        5. Course Level
+        6. Pre-Requisites
+        7. Co-Requisites
+        8. Availability
+        9. Instructors
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+    patch:
+      summary: Modify Single Course Info
+      operationId: patch-course-id
+      responses:
+        '202':
+          description: Accepted
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+      x-stoplight:
+        id: 0drpaxwj36xlt
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                level:
+                  type: string
+                pre_req:
+                  type: array
+                  items:
+                    type: string
+                co_req:
+                  type: array
+                  items:
+                    type: string
+                availability:
+                  type: array
+                  items:
+                    type: string
+                instructors:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      email:
+                        type: string
+              x-examples:
+                Example 1:
+                  name: Course 1
+                  description: This is course 1
+                  level: BSc
+                  pre_req:
+                    - BSC2001
+                    - BSC2002
+                  co_req:
+                    - BSC2001
+                    - BSC2002
+                  availability:
+                    - Sept2022
+                    - March2002
+                  instructors:
+                    - name: ABCD
+                      email: ABCD@efgh.com
+                    - name: EFGH
+                      email: ijkl@efgh.com
+            examples:
+              Example 1:
+                value:
+                  name: Course 1
+                  description: This is course 1
+                  level: BSc
+                  pre_req:
+                    - BSC2001
+                    - BSC2002
+                  co_req:
+                    - BSC2001
+                    - BSC2002
+                  availability:
+                    - Sept2022
+                    - March2002
+                  instructors:
+                    - name: ABCD
+                      email: ABCD@efgh.com
+                    - name: EFGH
+                      email: ijkl@efgh.com
+      tags:
+        - Courses
+      description: |-
+        Modify details of a course using its ID. - by admins
+
+        This includes:
+        2. Course Name
+        3. Course Description
+        4. Course Difficulty Rating
+        5. Course Level
+        6. Pre-Requisites
+        7. Co-Requisites
+        8. Availability
+        9. Instructors
+    delete:
+      summary: Delete a Course
+      operationId: delete-course-id
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+      x-stoplight:
+        id: qyvbbe2i66d7t
+      tags:
+        - Courses
+      description: Delete the course with the ID - by admin
+  /courses:
+    get:
+      summary: Get all courses info
+      tags:
+        - Courses
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  courses:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        description:
+                          type: string
+                        difficulty_rating:
+                          type: number
+                        level:
+                          type: string
+                        pre_req:
+                          type: array
+                          items:
+                            type: string
+                        co_req:
+                          type: array
+                          items:
+                            type: string
+                        availability:
+                          type: array
+                          items:
+                            type: string
+                        instructors:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              name:
+                                type: string
+                              email:
+                                type: string
+                x-examples:
+                  Example 1:
+                    courses:
+                      - id: BSC2001
+                        name: Course 1
+                        description: This is course 1
+                        difficulty_rating: 8.92
+                        level: Bsc
+                        pre_req:
+                          - BSC2001
+                          - BSC2002
+                        co_req:
+                          - BSC2001
+                          - BSC2002
+                        availability:
+                          - Sept2022
+                          - March2002
+                        instructors:
+                          - name: ABCD
+                            email: ABCD@efgh.com
+                          - name: EFGH
+                            email: ijkl@efgh.com
+              examples:
+                Example 1:
+                  value:
+                    courses:
+                      - id: BSC2001
+                        name: Course 1
+                        description: This is course 1
+                        difficulty_rating: 8.92
+                        level: Bsc
+                        pre_req:
+                          - BSC2001
+                          - BSC2002
+                        co_req:
+                          - BSC2001
+                          - BSC2002
+                        availability:
+                          - Sept2022
+                          - March2002
+                        instructors:
+                          - name: ABCD
+                            email: ABCD@efgh.com
+                          - name: EFGH
+                            email: ijkl@efgh.com
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+      operationId: get-all-courses
+      x-stoplight:
+        id: asas7mmdrlkjq
+      description: |-
+        Get info of all the courses stored in the database
+
+        This includes:
+        1. Course Code
+        2. Course Name
+        3. Course Description
+        4. Course Difficulty Rating
+        5. Course Level
+        6. Pre-Requisites
+        7. Co-Requisites
+        8. Availability
+        9. Instructors
+    parameters: []
+    post:
+      summary: Add a Course
+      operationId: add-course
+      responses:
+        '201':
+          description: Created
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+      x-stoplight:
+        id: vfgtrkcpq51v8
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                name:
+                  type: string
+                description:
+                  type: string
+                level:
+                  type: string
+                pre_req:
+                  type: array
+                  items:
+                    type: string
+                co_req:
+                  type: array
+                  items:
+                    type: string
+                availability:
+                  type: array
+                  items:
+                    type: string
+                instructors:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                      email:
+                        type: string
+              x-examples:
+                Example 1:
+                  code: BSC2001
+                  name: Course 1
+                  description: This is course 1
+                  level: BSc
+                  pre_req:
+                    - BSC2001
+                    - BSC2002
+                  co_req:
+                    - BSC2001
+                    - BSC2002
+                  availability:
+                    - Sept2022
+                    - March2002
+                  instructors:
+                    - name: ABCD
+                      email: ABCD@efgh.com
+                    - name: EFGH
+                      email: ijkl@efgh.com
+            examples:
+              Example 1:
+                value:
+                  code: BSC2001
+                  name: Course 1
+                  description: This is course 1
+                  level: BSc
+                  pre_req:
+                    - BSC2001
+                    - BSC2002
+                  co_req:
+                    - BSC2001
+                    - BSC2002
+                  availability:
+                    - Sept2022
+                    - March2002
+                  instructors:
+                    - name: ABCD
+                      email: ABCD@efgh.com
+                    - name: EFGH
+                      email: ijkl@efgh.com
+      tags:
+        - Courses
+      description: |-
+        Add a new course into the database - by the admins.
+
+        This includes:
+        1. Course Code
+        2. Course Name
+        3. Course Description
+        4. Course Difficulty Rating
+        5. Course Level
+        6. Pre-Requisites
+        7. Co-Requisites
+        8. Availability
+        9. Instructors
+  '/course/{courseID}/feedback':
+    parameters:
+      - schema:
+          type: string
+        name: courseID
+        in: path
+        required: true
+    get:
+      summary: Get Course Feedback
+      tags:
+        - Feedback
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  feedbacks:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        poster:
+                          type: string
+                        pic:
+                          type: string
+                        rating:
+                          type: number
+                        description:
+                          type: string
+                        time:
+                          type: string
+                x-examples:
+                  Example 1:
+                    feedbacks:
+                      - id: 1
+                        poster: 21f2000381@ds.study.iitm.ac.in
+                        pic: myprofilepic.png
+                        rating: 5.6
+                        description: This is a good course
+                        time: '2012-04-23T18:25:43.511Z'
+              examples:
+                Example 1:
+                  value:
+                    feedbacks:
+                      - id: 1
+                        poster: 21f2000381@ds.study.iitm.ac.in
+                        pic: myprofilepic.png
+                        rating: 5.6
+                        description: This is a good course
+                        time: '2012-04-23T18:25:43.511Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+      operationId: get-feedback-courseID
+      x-stoplight:
+        id: ig2c2eqbidpt7
+      description: Fetches all feedback submitted for a course.
+    post:
+      summary: Add Feedback to course
+      operationId: post-feedback-courseID
+      responses:
+        '201':
+          description: Created
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+      x-stoplight:
+        id: b8d8q13mpz0nf
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rating:
+                  type: number
+                description:
+                  type: string
+              x-examples:
+                Example 1:
+                  rating: 5.6
+                  description: This is a good course
+            examples:
+              Example 1:
+                value:
+                  rating: 5.6
+                  description: This is a good course
+      tags:
+        - Feedback
+      description: Allows adding new feedback for a course.
+  '/feedback/{FeedbackID}':
+    parameters:
+      - schema:
+          type: string
+        name: FeedbackID
+        in: path
+        required: true
+    get:
+      summary: Upvote Downvote feedback
+      tags:
+        - Feedback
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+      operationId: get-feedback-FeedbackID-updownvote
+      x-stoplight:
+        id: 5l45dy1yzn0xg
+      parameters:
+        - schema:
+            type: string
+            enum:
+              - upvote
+              - downvote
+          in: query
+          name: action
+          description: upvote/downvote
+      description: Increments or decrements vote count for a feedback.
+    delete:
+      summary: Delete a Feedback
+      operationId: delete-feedback-FeedbackID
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+      x-stoplight:
+        id: i9i7qy192wg9q
+      tags:
+        - Feedback
+      description: Removes specified feedback from database.
+  /recommedation:
+    get:
+      summary: Get Recommendations
+      tags:
+        - Recommender
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                x-examples:
+                  Example 1:
+                    no_courses: 3
+                    upcoming_term:
+                      - BSC2001
+                      - BSC2002
+                      - BSC2003
+                    matrix_order:
+                      - BSC2001
+                      - BSC2002
+                      - BSC2003
+                      - BSC2004
+                      - BSC2005
+                      - BSC2006
+                      - BSC2007
+                      - BSC2008
+                    recommendation_matrix:
+                      - - 1
+                        - 0
+                        - 1
+                        - 0
+                        - 0
+                        - 0
+                        - 1
+                        - 0
+                      - - 1
+                        - 0
+                        - 1
+                        - 0
+                        - 0
+                        - 0
+                        - 1
+                        - 0
+                      - - 1
+                        - 0
+                        - 1
+                        - 0
+                        - 0
+                        - 0
+                        - 1
+                        - 0
+                      - - 1
+                        - 0
+                        - 1
+                        - 0
+                        - 0
+                        - 0
+                        - 1
+                        - 0
+                      - - 1
+                        - 0
+                        - 1
+                        - 0
+                        - 0
+                        - 0
+                        - 1
+                        - 0
+                      - - 1
+                        - 0
+                        - 1
+                        - 0
+                        - 0
+                        - 0
+                        - 1
+                        - 0
+                      - - 1
+                        - 0
+                        - 1
+                        - 0
+                        - 0
+                        - 0
+                        - 1
+                        - 0
+                      - - 1
+                        - 0
+                        - 1
+                        - 0
+                        - 0
+                        - 0
+                        - 1
+                        - 0
+                properties:
+                  no_courses:
+                    type: integer
+                  upcoming_term:
+                    type: array
+                    items:
+                      type: string
+                  matrix_order:
+                    type: array
+                    description: The order in which the columns appear in the matr
+                    items:
+                      type: string
+                  recommendation_matrix:
+                    type: array
+                    items:
+                      type: integer
+              examples:
+                Example 1:
+                  value:
+                    no_courses: 3
+                    upcoming_term:
+                      - BSC2001
+                      - BSC2002
+                      - BSC2003
+                    matrix_order:
+                      - BSC2001
+                      - BSC2002
+                      - BSC2003
+                      - BSC2004
+                      - BSC2005
+                      - BSC2006
+                      - BSC2007
+                      - BSC2008
+                    recommendation_matrix:
+                      - - 1
+                        - 0
+                        - 1
+                        - 0
+                        - 0
+                        - 0
+                        - 1
+                        - 0
+                      - - 1
+                        - 0
+                        - 1
+                        - 0
+                        - 0
+                        - 0
+                        - 1
+                        - 0
+                      - - 1
+                        - 0
+                        - 1
+                        - 0
+                        - 0
+                        - 0
+                        - 1
+                        - 0
+                      - - 1
+                        - 0
+                        - 1
+                        - 0
+                        - 0
+                        - 0
+                        - 1
+                        - 0
+                      - - 1
+                        - 0
+                        - 1
+                        - 0
+                        - 0
+                        - 0
+                        - 1
+                        - 0
+                      - - 1
+                        - 0
+                        - 1
+                        - 0
+                        - 0
+                        - 0
+                        - 1
+                        - 0
+                      - - 1
+                        - 0
+                        - 1
+                        - 0
+                        - 0
+                        - 0
+                        - 1
+                        - 0
+                      - - 1
+                        - 0
+                        - 1
+                        - 0
+                        - 0
+                        - 0
+                        - 1
+                        - 0
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+      operationId: get-recommedations
+      x-stoplight:
+        id: c8re8rc65hz1d
+      description: |-
+        Provides personalized course recommendations for user using the algorithm stored in the backend.
+
+        It uses the user's profile as its input from the database.
+        Returns the result in the form a Graph Matrix that will be used to create a graph for the user.
+    parameters: []
+  /courses/bulkadd:
+    post:
+      summary: Bulk Add Courses
+      operationId: post-courses-bulkadd
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+      x-stoplight:
+        id: d374cpxkikive
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties: {}
+        description: Excel/CSV File containing data of the courses
+      tags:
+        - Courses
+      description: API to add multiple courses to database in batch using Excel/CSV File
+  /admins:
+    get:
+      summary: List of Admins
+      tags:
+        - Admin
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    email:
+                      type: string
+                    role:
+                      type: string
+                    created_at:
+                      type: string
+                x-examples:
+                  Example 1:
+                    - name: ABCD
+                      email: ABCD@EFGH.com
+                      role: superadmin
+                      created_at: '2012-04-23T18:25:43.511Z'
+                    - name: IJKL
+                      email: IJKL@EFGH.com
+                      role: iitm_management
+                      created_at: '2012-04-23T18:25:43.511Z'
+              examples:
+                Example 1:
+                  value:
+                    - name: ABCD
+                      email: ABCD@EFGH.com
+                      role: superadmin
+                      created_at: '2012-04-23T18:25:43.511Z'
+                    - name: IJKL
+                      email: IJKL@EFGH.com
+                      role: iitm_management
+                      created_at: '2012-04-23T18:25:43.511Z'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+      operationId: get-admins
+      x-stoplight:
+        id: fgsu2c7hev5jk
+      description: 'Retrieves list of all admin users including SuperAdmins, Course Team Members, IITM Management'
+    parameters: []
+    post:
+      summary: Add admins
+      operationId: post-admins
+      responses:
+        '201':
+          description: Created
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+      x-stoplight:
+        id: mrjzh9myjxggs
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                role:
+                  type: string
+              x-examples:
+                Example 1:
+                  email: IJKL@EFGH.com
+                  role: iitm_management
+            examples:
+              Example 1:
+                value:
+                  email: IJKL@EFGH.com
+                  role: iitm_management
+              Example 2:
+                value:
+                  email: IJKL@EFGH.com
+                  role: course_team_member
+              Example 3:
+                value:
+                  email: IJKL@EFGH.com
+                  role: super_admin
+      tags:
+        - Admin
+      description: 'Out of the already registered users, select a new admin user with the correspoiding role.'
+    patch:
+      summary: Modify details of an admin
+      operationId: patch-admins
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+      x-stoplight:
+        id: x8xcnbttd3z3k
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                role:
+                  type: string
+              x-examples:
+                Example 1:
+                  email: IJKL@EFGH.com
+                  role: iitm_management
+            examples:
+              Example 1:
+                value:
+                  email: IJKL@EFGH.com
+                  role: iitm_management
+      tags:
+        - Admin
+      description: Modify the role of an already-registered admin
+    delete:
+      summary: Delete an admin
+      operationId: delete-admins
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+      x-stoplight:
+        id: f125z74dfh6bz
+      parameters:
+        - schema:
+            type: string
+            format: email
+            example: 21f2000381@ds.study.iitm.ac.in
+          in: query
+          name: email
+          description: Email of the admin to be deleted
+      tags:
+        - Admin
+      description: 'Revoke the "admin" status of a user, and convert to student.'
+  /stats/courses:
+    get:
+      summary: Statistics about individual courses
+      tags:
+        - Statistics
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    name:
+                      type: string
+                    difficulty:
+                      type: number
+                    current_enrolled:
+                      type: integer
+                    completed:
+                      type: integer
+                    feedback:
+                      type: integer
+                    instructors:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                          email:
+                            type: string
+                x-examples:
+                  Example 1:
+                    - id: BSC2001
+                      name: Mathematics 1
+                      difficulty: 4.32
+                      current_enrolled: 124
+                      completed: 456
+                      feedback: 45
+                      instructors:
+                        - name: abcd
+                          email: efgh@gmail.com
+                    - id: BSC2002
+                      name: Mathematics 2
+                      difficulty: 6.32
+                      current_enrolled: 24
+                      completed: 56
+                      feedback: 12
+                      instructors:
+                        - name: abcd
+                          email: efgh@gmail.com
+              examples:
+                Example 1:
+                  value:
+                    - id: BSC2001
+                      name: Mathematics 1
+                      difficulty: 4.32
+                      current_enrolled: 124
+                      completed: 456
+                      feedback: 45
+                      instructors:
+                        - name: abcd
+                          email: efgh@gmail.com
+                    - id: BSC2002
+                      name: Mathematics 2
+                      difficulty: 6.32
+                      current_enrolled: 24
+                      completed: 56
+                      feedback: 12
+                      instructors:
+                        - name: abcd
+                          email: efgh@gmail.com
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+      operationId: get-stats-courses
+      x-stoplight:
+        id: exkcuvbhoyu10
+      description: Fetches analytics and statistics related to courses from the database. See example for further description.
+  /stats/general:
+    get:
+      summary: General Statistics about the app
+      tags:
+        - Statistics
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  courses:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                      foundation:
+                        type: integer
+                      diplomads:
+                        type: integer
+                      diplomap:
+                        type: integer
+                      bsc:
+                        type: integer
+                      bs:
+                        type: integer
+                  students:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                      foundation:
+                        type: integer
+                      diplomads:
+                        type: integer
+                      diplomap:
+                        type: integer
+                      bsc:
+                        type: integer
+                      bs:
+                        type: integer
+                  admins:
+                    type: object
+                    properties:
+                      superadmins:
+                        type: integer
+                      ctm:
+                        type: integer
+                      management:
+                        type: integer
+                x-examples:
+                  Example 1:
+                    courses:
+                      total: 32
+                      foundation: 23
+                      diplomads: 23
+                      diplomap: 23
+                      bsc: 23
+                      bs: 23
+                    students:
+                      total: 30042001
+                      foundation: 42001
+                      diplomads: 42001
+                      diplomap: 42001
+                      bsc: 42001
+                      bs: 42001
+                    admins:
+                      superadmins: 23
+                      ctm: 23
+                      management: 23
+              examples:
+                Example 1:
+                  value:
+                    courses:
+                      total: 32
+                      foundation: 23
+                      diplomads: 23
+                      diplomap: 23
+                      bsc: 23
+                      bs: 23
+                    students:
+                      total: 30042001
+                      foundation: 42001
+                      diplomads: 42001
+                      diplomap: 42001
+                      bsc: 42001
+                      bs: 42001
+                    admins:
+                      superadmins: 23
+                      ctm: 23
+                      management: 23
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                x-examples:
+                  Example 1:
+                    message: You need to login first
+      operationId: get-stats-general
+      x-stoplight:
+        id: svar2xj64pzkh
+      description: Retrieves overall platform statistics and metrics. See example for further description.
+components:
+  schemas: {}
+  securitySchemes:
+    api_jwt_key:
+      type: http
+      scheme: bearer
+security:
+  - api_jwt_key: []
