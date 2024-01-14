@@ -1,1 +1,12 @@
 Put only your Milestone 5 submission documents in this directory.
+**Milestone 5 - Test cases, test suite of the project: Deadline by the end of Week 10 [1st December]**
+For each API endpoint, design extensive test cases. Test cases should be in the following format:
+[ API being tested,
+
+Inputs,
+
+Expected output,
+
+Actual Output,
+
+Result- Success/Fail ]
